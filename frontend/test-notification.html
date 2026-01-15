@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Notification</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+  <div style="padding: 40px; max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; margin-top: 40px;">
+    <h1>Test Notification System</h1>
+    
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+      <button onclick="Toast.success('Berhasil! Ini toast success')">Test Success Toast</button>
+      <button onclick="Toast.error('Error! Ini toast error')">Test Error Toast</button>
+      <button onclick="Toast.warning('Peringatan! Ini toast warning')">Test Warning Toast</button>
+      <button onclick="Toast.info('Info! Ini toast info')">Test Info Toast</button>
+      
+      <button onclick="testConfirm()">Test Confirm Dialog</button>
+      <button onclick="testDelete()">Test Delete Confirm</button>
+    </div>
+    
+    <div id="result" style="margin-top: 20px; padding: 12px; background: #f0f0f0; border-radius: 6px; display: none;"></div>
+  </div>
+
+  <script src="notification.js"></script>
+  <script>
+    async function testConfirm() {
+      const result = await Confirm.show({
+        title: 'Test Konfirmasi',
+        message: 'Apakah Anda yakin ingin melanjutkan?',
+        icon: '❓',
+        confirmText: 'Ya, Lanjutkan',
+        cancelText: 'Batal'
+      });
+      
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.textContent = 'Hasil: ' + (result ? 'Confirmed' : 'Cancelled');
+      
+      if (result) {
+        Toast.success('Anda memilih Ya!');
+      } else {
+        Toast.info('Anda membatalkan');
+      }
+    }
+    
+    async function testDelete() {
+      const result = await Confirm.delete('Data ini akan dihapus permanen.');
+      
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.textContent = 'Hasil: ' + (result ? 'Deleted' : 'Cancelled');
+      
+      if (result) {
+        Toast.success('Data berhasil dihapus!');
+      } else {
+        Toast.info('Penghapusan dibatalkan');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "diginote-frontend",
+  "version": "1.0.0",
+  "description": "Frontend untuk DigiNote - Catatan Keuangan Digital",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -o",
+    "build": "echo 'No build needed for vanilla JS'"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

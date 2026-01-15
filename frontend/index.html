@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigiNote - Catatan Keuangan Digital</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles.css?v=8">
+</head>
+<body>
+  <!-- Auth Section -->
+  <div id="authSection" class="container">
+    <div class="auth-box">
+      <h1><i class="fas fa-wallet"></i> DigiNote</h1>
+      
+      <!-- Login Form -->
+      <div id="loginForm" class="form-container">
+        <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+        <form id="loginFormElement">
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="loginUsername" placeholder="Username" required>
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+          </div>
+          <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="form-container" style="display: none;">
+        <h2><i class="fas fa-user-plus"></i> Daftar</h2>
+        <form id="registerFormElement">
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="registerUsername" placeholder="Username" required>
+          </div>
+          <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="registerEmail" placeholder="Email" required>
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="registerPassword" placeholder="Password" required>
+          </div>
+          <button type="submit"><i class="fas fa-user-plus"></i> Daftar</button>
+        </form>
+        <p>Sudah punya akun? <a href="#" id="showLogin">Login di sini</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Section -->
+  <div id="appSection" class="app-container" style="display: none;">
+    <div class="header">
+      <h1><i class="fas fa-wallet"></i> DigiNote</h1>
+      <div class="user-info">
+        <span><i class="fas fa-user-circle"></i> <span id="username"></span></span>
+        <button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      
+      <!-- Tab 1: Transaksi -->
+      <div id="tabTransaksi" class="tab-pane active">
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="card income">
+            <h3><i class="fas fa-arrow-up"></i> Pemasukan</h3>
+            <p class="amount" id="totalIncome">Rp 0</p>
+          </div>
+          <div class="card expense">
+            <h3><i class="fas fa-arrow-down"></i> Pengeluaran</h3>
+            <p class="amount" id="totalExpense">Rp 0</p>
+          </div>
+          <div class="card balance">
+            <h3><i class="fas fa-wallet"></i> Saldo</h3>
+            <p class="amount" id="balance">Rp 0</p>
+          </div>
+        </div>
+
+        <!-- Add Transaction Form -->
+        <div class="card">
+          <h2><i class="fas fa-plus-circle"></i> Tambah Transaksi</h2>
+          <form id="transactionForm">
+            <div class="form-row">
+              <select id="type" required>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+              <input type="text" id="amount" placeholder="Rp 0" required inputmode="numeric">
+            </div>
+            <div class="form-row-category">
+              <select id="category" required>
+                <option value="">Pilih Kategori</option>
+              </select>
+              <button type="button" id="manageCategoriesBtn" class="btn-icon" title="Kelola Kategori">
+                <i class="fas fa-cog"></i>
+              </button>
+            </div>
+            <input type="date" id="date" required>
+            <textarea id="description" placeholder="Deskripsi (opsional)" rows="2"></textarea>
+            <button type="submit"><i class="fas fa-plus"></i> Tambah Transaksi</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab 2: Riwayat -->
+      <div id="tabRiwayat" class="tab-pane">
+        <div class="card">
+          <div class="transactions-header">
+            <h2><i class="fas fa-history"></i> Riwayat Transaksi</h2>
+          </div>
+          
+          <!-- Filter Section -->
+          <div class="filter-section">
+            <div class="filter-row">
+              <select id="filterType">
+                <option value="">Semua Tipe</option>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+              <select id="filterMonth">
+                <option value="">Semua Bulan</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+              </select>
+              <select id="filterYear"></select>
+            </div>
+          </div>
+          
+          <div id="transactionsList"></div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Laporan -->
+      <div id="tabLaporan" class="tab-pane">
+        <div class="card">
+          <h2><i class="fas fa-chart-pie"></i> Laporan Keuangan</h2>
+          
+          <!-- Period Filter -->
+          <div class="filter-section">
+            <div class="filter-row">
+              <select id="reportMonth">
+                <option value="">Semua Bulan</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+              </select>
+              <select id="reportYear"></select>
+            </div>
+          </div>
+          
+          <!-- Summary Detail -->
+          <div class="report-summary">
+            <div class="report-item">
+              <div class="report-label">
+                <i class="fas fa-arrow-up" style="color: #10b981;"></i>
+                <span>Total Pemasukan</span>
+              </div>
+              <div class="report-value income" id="reportIncome">Rp 0</div>
+            </div>
+            <div class="report-item">
+              <div class="report-label">
+                <i class="fas fa-arrow-down" style="color: #ef4444;"></i>
+                <span>Total Pengeluaran</span>
+              </div>
+              <div class="report-value expense" id="reportExpense">Rp 0</div>
+            </div>
+            <div class="report-item">
+              <div class="report-label">
+                <i class="fas fa-wallet" style="color: #667eea;"></i>
+                <span>Saldo Akhir</span>
+              </div>
+              <div class="report-value balance" id="reportBalance">Rp 0</div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown -->
+          <div class="category-breakdown">
+            <h3><i class="fas fa-tags"></i> Pengeluaran per Kategori</h3>
+            <div id="categoryBreakdown"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="tabTransaksi">
+        <i class="fas fa-plus-circle"></i>
+        <span>Transaksi</span>
+      </button>
+      <button class="nav-item" data-tab="tabRiwayat">
+        <i class="fas fa-history"></i>
+        <span>Riwayat</span>
+      </button>
+      <button class="nav-item" data-tab="tabLaporan">
+        <i class="fas fa-chart-pie"></i>
+        <span>Laporan</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Category Management Modal -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-tags"></i> Kelola Kategori</h2>
+        <button class="modal-close" id="closeCategoryModal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Add Category Form -->
+        <form id="addCategoryForm">
+          <h3><i class="fas fa-plus"></i> Tambah Kategori Baru</h3>
+          
+          <!-- Icon Picker -->
+          <div class="icon-picker">
+            <label>Pilih Icon:</label>
+            <div class="icon-grid" id="iconGrid">
+              <button type="button" class="icon-option active" data-icon="fa-tag"><i class="fas fa-tag"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-shopping-cart"><i class="fas fa-shopping-cart"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-utensils"><i class="fas fa-utensils"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-home"><i class="fas fa-home"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-car"><i class="fas fa-car"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-bus"><i class="fas fa-bus"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-heart"><i class="fas fa-heart"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-graduation-cap"><i class="fas fa-graduation-cap"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-briefcase"><i class="fas fa-briefcase"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-gift"><i class="fas fa-gift"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-coffee"><i class="fas fa-coffee"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-film"><i class="fas fa-film"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-gamepad"><i class="fas fa-gamepad"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-mobile-alt"><i class="fas fa-mobile-alt"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-laptop"><i class="fas fa-laptop"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-tshirt"><i class="fas fa-tshirt"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-pills"><i class="fas fa-pills"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-book"><i class="fas fa-book"></i></button>
+              <button type="button" class="icon-option" data-icon="fa-plane"><i class="fas fa-plane"></i></button>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <input type="text" id="newCategoryName" placeholder="Nama Kategori" required>
+            <select id="newCategoryType" required>
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+          </div>
+          <button type="submit"><i class="fas fa-plus"></i> Tambah</button>
+        </form>
+
+        <!-- Categories List -->
+        <div class="categories-section">
+          <h3><i class="fas fa-arrow-up"></i> Kategori Pemasukan</h3>
+          <div id="incomeCategoriesList" class="categories-list"></div>
+        </div>
+
+        <div class="categories-section">
+          <h3><i class="fas fa-arrow-down"></i> Kategori Pengeluaran</h3>
+          <div id="expenseCategoriesList" class="categories-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="notification.js"></script>
+  <script src="app.js?v=19"></script>
+</body>
+</html>
