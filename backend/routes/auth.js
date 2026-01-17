@@ -1,5 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/database');
 
@@ -24,13 +23,10 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Username atau email sudah terdaftar' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Insert user
     const [result] = await pool.query(
       'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [username, email, hashedPassword]
+      [username, email, password]
     );
 
     res.status(201).json({
@@ -69,7 +65,7 @@ router.post('/login', async (req, res) => {
     const user = users[0];
 
     // Verifikasi password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = password === user.password;
 
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Username atau password salah' });
