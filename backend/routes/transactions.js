@@ -12,25 +12,30 @@ router.get('/', async (req, res) => {
   try {
     const { type, startDate, endDate } = req.query;
     
-    let query = 'SELECT * FROM transactions WHERE user_id = ?';
+    let query = `
+      SELECT t.*, c.name as category_name 
+      FROM transactions t 
+      LEFT JOIN categories c ON t.category_id = c.id 
+      WHERE t.user_id = ?
+    `;
     const params = [req.userId];
 
     if (type) {
-      query += ' AND type = ?';
+      query += ' AND t.type = ?';
       params.push(type);
     }
 
     if (startDate) {
-      query += ' AND transaction_date >= ?';
+      query += ' AND t.transaction_date >= ?';
       params.push(startDate);
     }
 
     if (endDate) {
-      query += ' AND transaction_date <= ?';
+      query += ' AND t.transaction_date <= ?';
       params.push(endDate);
     }
 
-    query += ' ORDER BY transaction_date DESC, created_at DESC';
+    query += ' ORDER BY t.transaction_date DESC, t.created_at DESC';
 
     const [rows] = await pool.query(query, params);
     res.json(rows);

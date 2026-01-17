@@ -332,15 +332,15 @@ function displayTransactions(transactions) {
   container.innerHTML = transactions.map(t => `
     <div class="transaction-item">
       <div class="transaction-info">
-        <div class="transaction-category"><i class="fas fa-tag"></i> ${t.category}</div>
+        <div class="transaction-category">🏷️ ${t.category_name || 'Kategori'}</div>
         ${t.description ? `<div class="transaction-description">${t.description}</div>` : ''}
-        <div class="transaction-date"><i class="far fa-calendar"></i> ${formatDate(t.date)}</div>
+        <div class="transaction-date">📅 ${formatDate(t.transaction_date)}</div>
       </div>
       <div class="transaction-amount ${t.type}">
         ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
       </div>
       <div class="transaction-actions">
-        <button class="btn-delete" data-id="${t.id}"><i class="fas fa-trash"></i></button>
+        <button class="btn-delete" data-id="${t.id}">🗑️</button>
       </div>
     </div>
   `).join('');
