@@ -2,7 +2,7 @@
 let token = localStorage.getItem('token');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let categories = [];
-let selectedIcon = 'fa-tag'; // Default icon
+let selectedIcon = '💰'; // Default icon
 
 // DOM Elements
 const authSection = document.getElementById('authSection');
@@ -518,9 +518,9 @@ async function handleAddCategory(e) {
     document.getElementById('addCategoryForm').reset();
     
     // Reset icon to default
-    selectedIcon = 'fa-tag';
+    selectedIcon = '💰';
     document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('active'));
-    document.querySelector('.icon-option[data-icon="fa-tag"]').classList.add('active');
+    document.querySelector('.icon-option[data-icon="💰"]').classList.add('active');
     
     Toast.success('Kategori berhasil ditambahkan!');
   } catch (error) {

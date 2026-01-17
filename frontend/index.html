@@ -5,50 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DigiNote - Catatan Keuangan Digital</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-  <!-- Feather Icons -->
-  <script src="https://unpkg.com/feather-icons"></script>
+  <link rel="stylesheet" href="styles.css?v=8">
   <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <!-- Auth Section -->
   <div id="authSection" class="container">
     <div class="auth-box">
-      <h1><i data-feather="credit-card"></i> DigiNote</h1>
+      <h1>💰 DigiNote</h1>
       
       <!-- Login Form -->
       <div id="loginForm" class="form-container">
-        <h2><i data-feather="log-in"></i> Login</h2>
+        <h2>🔑 Login</h2>
         <form id="loginFormElement">
           <div class="input-group">
-            <i data-feather="user"></i>
+            👤
             <input type="text" id="loginUsername" placeholder="Username" required>
           </div>
           <div class="input-group">
-            <i data-feather="lock"></i>
+            🔒
             <input type="password" id="loginPassword" placeholder="Password" required>
           </div>
-          <button type="submit"><i data-feather="log-in"></i> Login</button>
+          <button type="submit">🔑 Login</button>
         </form>
         <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
       </div>
 
       <!-- Register Form -->
       <div id="registerForm" class="form-container" style="display: none;">
-        <h2><i data-feather="user-plus"></i> Daftar</h2>
+        <h2>👥 Daftar</h2>
         <form id="registerFormElement">
           <div class="input-group">
-            <i data-feather="user"></i>
+            👤
             <input type="text" id="registerUsername" placeholder="Username" required>
           </div>
           <div class="input-group">
-            <i data-feather="mail"></i>
+            📧
             <input type="email" id="registerEmail" placeholder="Email" required>
           </div>
           <div class="input-group">
-            <i data-feather="lock"></i>
+            🔒
             <input type="password" id="registerPassword" placeholder="Password" required>
           </div>
-          <button type="submit"><i data-feather="user-plus"></i> Daftar</button>
+          <button type="submit">👥 Daftar</button>
         </form>
         <p>Sudah punya akun? <a href="#" id="showLogin">Login di sini</a></p>
       </div>
@@ -58,10 +57,10 @@
   <!-- Main App Section -->
   <div id="appSection" class="app-container" style="display: none;">
     <div class="header">
-      <h1><i data-feather="credit-card"></i> DigiNote</h1>
+      <h1>💰 DigiNote</h1>
       <div class="user-info">
-        <span><i data-feather="user"></i> <span id="username"></span></span>
-        <button id="logoutBtn" class="btn-secondary"><i data-feather="log-out"></i></button>
+        <span>👤 <span id="username"></span></span>
+        <button id="logoutBtn" class="btn-secondary">🚪</button>
       </div>
     </div>
 
@@ -73,22 +72,22 @@
         <!-- Summary Cards -->
         <div class="summary-cards">
           <div class="card income">
-            <h3><i data-feather="trending-up"></i> Pemasukan</h3>
+            <h3>📈 Pemasukan</h3>
             <p class="amount" id="totalIncome">Rp 0</p>
           </div>
           <div class="card expense">
-            <h3><i data-feather="trending-down"></i> Pengeluaran</h3>
+            <h3>📉 Pengeluaran</h3>
             <p class="amount" id="totalExpense">Rp 0</p>
           </div>
           <div class="card balance">
-            <h3><i data-feather="credit-card"></i> Saldo</h3>
+            <h3>💰 Saldo</h3>
             <p class="amount" id="balance">Rp 0</p>
           </div>
         </div>
 
         <!-- Add Transaction Form -->
         <div class="card">
-          <h2><i data-feather="plus-circle"></i> Tambah Transaksi</h2>
+          <h2>➕ Tambah Transaksi</h2>
           <form id="transactionForm">
             <div class="form-row">
               <select id="type" required>
@@ -102,12 +101,12 @@
                 <option value="">Pilih Kategori</option>
               </select>
               <button type="button" id="manageCategoriesBtn" class="btn-icon" title="Kelola Kategori">
-                <i data-feather="settings"></i>
+                ⚙️
               </button>
             </div>
             <input type="date" id="date" required>
             <textarea id="description" placeholder="Deskripsi (opsional)" rows="2"></textarea>
-            <button type="submit"><i data-feather="plus"></i> Tambah Transaksi</button>
+            <button type="submit">➕ Tambah Transaksi</button>
           </form>
         </div>
       </div>
@@ -116,7 +115,7 @@
       <div id="tabRiwayat" class="tab-pane">
         <div class="card">
           <div class="transactions-header">
-            <h2><i data-feather="clock"></i> Riwayat Transaksi</h2>
+            <h2>🕐 Riwayat Transaksi</h2>
           </div>
           
           <!-- Filter Section -->
@@ -153,7 +152,7 @@
       <!-- Tab 3: Laporan -->
       <div id="tabLaporan" class="tab-pane">
         <div class="card">
-          <h2><i data-feather="pie-chart"></i> Laporan Keuangan</h2>
+          <h2>📊 Laporan Keuangan</h2>
           
           <!-- Period Filter -->
           <div class="filter-section">
@@ -204,7 +203,7 @@
 
           <!-- Category Breakdown -->
           <div class="category-breakdown">
-            <h3><i data-feather="tag"></i> Pengeluaran per Kategori</h3>
+            <h3>🏷️ Pengeluaran per Kategori</h3>
             <div id="categoryBreakdown"></div>
           </div>
         </div>
@@ -215,15 +214,15 @@
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-tab="tabTransaksi">
-        <i data-feather="plus-circle"></i>
+        ➕
         <span>Transaksi</span>
       </button>
       <button class="nav-item" data-tab="tabRiwayat">
-        <i data-feather="clock"></i>
+        🕐
         <span>Riwayat</span>
       </button>
       <button class="nav-item" data-tab="tabLaporan">
-        <i data-feather="pie-chart"></i>
+        📊
         <span>Laporan</span>
       </button>
     </nav>
@@ -233,39 +232,46 @@
   <div id="categoryModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i data-feather="tag"></i> Kelola Kategori</h2>
+        <h2>🏷️ Kelola Kategori</h2>
         <button class="modal-close" id="closeCategoryModal">&times;</button>
       </div>
       
       <div class="modal-body">
         <!-- Add Category Form -->
         <form id="addCategoryForm">
-          <h3><i data-feather="plus"></i> Tambah Kategori Baru</h3>
+          <h3>➕ Tambah Kategori Baru</h3>
           
           <!-- Icon Picker -->
           <div class="icon-picker">
             <label>Pilih Icon:</label>
             <div class="icon-grid" id="iconGrid">
-              <button type="button" class="icon-option active" data-icon="fa-tag"><i data-feather="tag"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-shopping-cart"><i data-feather="shopping-cart"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-utensils"><i data-feather="coffee"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-home"><i data-feather="home"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-car"><i data-feather="car"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-bus"><i data-feather="truck"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-heart"><i data-feather="heart"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-graduation-cap"><i data-feather="book"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-briefcase"><i data-feather="briefcase"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-gift"><i data-feather="gift"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-coffee"><i class="fas fa-coffee"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-film"><i class="fas fa-film"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-gamepad"><i class="fas fa-gamepad"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-mobile-alt"><i class="fas fa-mobile-alt"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-laptop"><i class="fas fa-laptop"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-tshirt"><i class="fas fa-tshirt"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-pills"><i class="fas fa-pills"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-book"><i class="fas fa-book"></i></button>
-              <button type="button" class="icon-option" data-icon="fa-plane"><i class="fas fa-plane"></i></button>
+              <button type="button" class="icon-option active" data-icon="💰">💰</button>
+              <button type="button" class="icon-option" data-icon="🛒">🛒</button>
+              <button type="button" class="icon-option" data-icon="🍔">🍔</button>
+              <button type="button" class="icon-option" data-icon="🏠">🏠</button>
+              <button type="button" class="icon-option" data-icon="🚗">🚗</button>
+              <button type="button" class="icon-option" data-icon="🚌">🚌</button>
+              <button type="button" class="icon-option" data-icon="❤️">❤️</button>
+              <button type="button" class="icon-option" data-icon="📚">📚</button>
+              <button type="button" class="icon-option" data-icon="💼">💼</button>
+              <button type="button" class="icon-option" data-icon="🎁">🎁</button>
+              <button type="button" class="icon-option" data-icon="☕">☕</button>
+              <button type="button" class="icon-option" data-icon="🎮">🎮</button>
+              <button type="button" class="icon-option" data-icon="🏥">🏥</button>
+              <button type="button" class="icon-option" data-icon="✈️">✈️</button>
+              <button type="button" class="icon-option" data-icon="🎵">🎵</button>
+              <button type="button" class="icon-option" data-icon="👕">👕</button>
+              <button type="button" class="icon-option" data-icon="💊">💊</button>
+              <button type="button" class="icon-option" data-icon="🍽️">🍽️</button>
+              <button type="button" class="icon-option" data-icon="👌">👌</button>
+              <button type="button" class="icon-option" data-icon="😊">😊</button>
+              <button type="button" class="icon-option" data-icon="📱">📱</button>
+              <button type="button" class="icon-option" data-icon="💻">💻</button>
+              <button type="button" class="icon-option" data-icon="👕">👕</button>
+              <button type="button" class="icon-option" data-icon="🏋️">🏋️</button>
+              <button type="button" class="icon-option" data-icon="💊">💊</button>
+              <button type="button" class="icon-option" data-icon="📚">📚</button>
+              <button type="button" class="icon-option" data-icon="✈️">✈️</button>
             </div>
           </div>
           
@@ -276,17 +282,17 @@
               <option value="expense">Pengeluaran</option>
             </select>
           </div>
-          <button type="submit"><i data-feather="plus"></i> Tambah</button>
+          <button type="submit">➕ Tambah</button>
         </form>
 
         <!-- Categories List -->
         <div class="categories-section">
-          <h3><i data-feather="trending-up"></i> Kategori Pemasukan</h3>
+          <h3>📈 Kategori Pemasukan</h3>
           <div id="incomeCategoriesList" class="categories-list"></div>
         </div>
 
         <div class="categories-section">
-          <h3><i data-feather="trending-down"></i> Kategori Pengeluaran</h3>
+          <h3>📉 Kategori Pengeluaran</h3>
           <div id="expenseCategoriesList" class="categories-list"></div>
         </div>
       </div>
@@ -296,9 +302,5 @@
   <script src="config.js"></script>
   <script src="notification.js"></script>
   <script src="app.js?v=19"></script>
-  <script>
-    // Initialize Feather icons
-    feather.replace();
-  </script>
 </body>
 </html>
