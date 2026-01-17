@@ -47,6 +47,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    
+    console.log('Login attempt:', { username, password });
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username dan password harus diisi' });
@@ -57,15 +59,19 @@ router.post('/login', async (req, res) => {
       'SELECT * FROM users WHERE username = ?',
       [username]
     );
+    
+    console.log('Found users:', users);
 
     if (users.length === 0) {
       return res.status(401).json({ error: 'Username atau password salah' });
     }
 
     const user = users[0];
+    console.log('User from DB:', { id: user.id, username: user.username, password: user.password });
 
     // Verifikasi password
     const isValidPassword = password === user.password;
+    console.log('Password comparison:', { inputPassword: password, dbPassword: user.password, isValid: isValidPassword });
 
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Username atau password salah' });

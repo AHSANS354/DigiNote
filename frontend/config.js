@@ -1,1 +1,1 @@
-const API_URL = 'http://localhost:5002/api';
+const API_URL = 'https://diginote.digistock.my.id/api';
