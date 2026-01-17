@@ -83,8 +83,12 @@ router.get('/summary', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { type, amount, category_id, description, date } = req.body;
+    
+    console.log('Request body:', req.body);
+    console.log('Parsed values:', { type, amount, category_id, description, date });
 
     if (!type || !amount || !category_id || !date) {
+      console.log('Missing fields - type:', !!type, 'amount:', !!amount, 'category_id:', !!category_id, 'date:', !!date);
       return res.status(400).json({ error: 'Field wajib harus diisi' });
     }
 
