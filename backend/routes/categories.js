@@ -68,7 +68,7 @@ router.delete('/:id', async (req, res) => {
 
     // Cek apakah kategori digunakan di transaksi
     const [used] = await pool.query(
-      'SELECT COUNT(*) as count FROM transactions t JOIN categories c ON LOWER(t.category) = LOWER(c.name) WHERE c.id = ? AND c.user_id = ?',
+      'SELECT COUNT(*) as count FROM transactions WHERE category_id = ? AND user_id = ?',
       [id, req.userId]
     );
 
