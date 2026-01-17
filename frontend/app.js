@@ -8,7 +8,6 @@ let selectedIcon = '💰'; // Default icon
 const authSection = document.getElementById('authSection');
 const appSection = document.getElementById('appSection');
 const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
 const categoryModal = document.getElementById('categoryModal');
 
 // Initialize
@@ -27,22 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  // Auth toggle
-  document.getElementById('showRegister').addEventListener('click', (e) => {
-    e.preventDefault();
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'block';
-  });
-
-  document.getElementById('showLogin').addEventListener('click', (e) => {
-    e.preventDefault();
-    registerForm.style.display = 'none';
-    loginForm.style.display = 'block';
-  });
-
   // Forms
   document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
-  document.getElementById('registerFormElement').addEventListener('submit', handleRegister);
   document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
   document.getElementById('logoutBtn').addEventListener('click', handleLogout);
   
@@ -121,42 +106,6 @@ async function handleLogin(e) {
   }
 }
 
-async function handleRegister(e) {
-  e.preventDefault();
-  const username = document.getElementById('registerUsername').value;
-  const email = document.getElementById('registerEmail').value;
-  const password = document.getElementById('registerPassword').value;
-
-  try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password })
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      let errorMsg = 'Registrasi gagal';
-      try {
-        const data = JSON.parse(text);
-        errorMsg = data.error || errorMsg;
-      } catch (e) {
-        console.error('Response:', text);
-      }
-      Toast.error(errorMsg);
-      return;
-    }
-
-    const data = await response.json();
-    Toast.success('Registrasi berhasil! Silakan login.');
-    registerForm.style.display = 'none';
-    loginForm.style.display = 'block';
-    document.getElementById('registerFormElement').reset();
-  } catch (error) {
-    console.error('Register error:', error);
-    Toast.error('Error: ' + error.message);
-  }
-}
 
 function handleLogout() {
   token = null;
