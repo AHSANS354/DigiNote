@@ -1252,3 +1252,68 @@ button i, h1 i, h2 i, h3 i {
 .icon-option i {
   margin: 0;
 }
+/* Feather Icons Styling */
+[data-feather] {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Icon Colors */
+.income [data-feather="trending-up"] {
+  color: #10b981;
+}
+
+.expense [data-feather="trending-down"] {
+  color: #ef4444;
+}
+
+.balance [data-feather="credit-card"] {
+  color: #667eea;
+}
+
+/* Navigation Icons */
+.nav-item [data-feather] {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 4px;
+}
+
+.nav-item.active [data-feather] {
+  color: #667eea;
+}
+
+/* Button Icons */
+button [data-feather] {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+/* Header Icons */
+h1 [data-feather], h2 [data-feather], h3 [data-feather] {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  color: #667eea;
+}
+
+/* Input Group Icons */
+.input-group [data-feather] {
+  color: #9ca3af;
+}
+
+/* Report Icons with specific colors */
+.report-label [data-feather="trending-up"] {
+  color: #10b981 !important;
+}
+
+.report-label [data-feather="trending-down"] {
+  color: #ef4444 !important;
+}
+
+.report-label [data-feather="credit-card"] {
+  color: #667eea !important;
+}

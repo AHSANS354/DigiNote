@@ -1,6 +1,3 @@
-// API URL - hardcoded untuk development
-const API_URL = 'http://localhost:5000/api';
-
 // State management
 let token = localStorage.getItem('token');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
@@ -425,7 +422,7 @@ function updateCategoryOptions() {
   categorySelect.innerHTML = '<option value="">Pilih Kategori</option>';
   filteredCategories.forEach(cat => {
     const option = document.createElement('option');
-    option.value = cat.name;
+    option.value = cat.id;
     option.textContent = cat.name;
     categorySelect.appendChild(option);
   });
