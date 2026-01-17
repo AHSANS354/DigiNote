@@ -184,7 +184,7 @@ async function handleAddTransaction(e) {
   const transaction = {
     type: document.getElementById('type').value,
     amount: amount,
-    category: document.getElementById('category').value,
+    category_id: document.getElementById('category').value,
     description: document.getElementById('description').value,
     date: document.getElementById('date').value
   };

@@ -21,16 +21,16 @@ router.get('/', async (req, res) => {
     }
 
     if (startDate) {
-      query += ' AND date >= ?';
+      query += ' AND transaction_date >= ?';
       params.push(startDate);
     }
 
     if (endDate) {
-      query += ' AND date <= ?';
+      query += ' AND transaction_date <= ?';
       params.push(endDate);
     }
 
-    query += ' ORDER BY date DESC, created_at DESC';
+    query += ' ORDER BY transaction_date DESC, created_at DESC';
 
     const [rows] = await pool.query(query, params);
     res.json(rows);
@@ -57,12 +57,12 @@ router.get('/summary', async (req, res) => {
     const params = [req.userId];
     
     if (startDate) {
-      query += ' AND date >= ?';
+      query += ' AND transaction_date >= ?';
       params.push(startDate);
     }
     
     if (endDate) {
-      query += ' AND date <= ?';
+      query += ' AND transaction_date <= ?';
       params.push(endDate);
     }
 
@@ -77,9 +77,9 @@ router.get('/summary', async (req, res) => {
 // Tambah transaksi
 router.post('/', async (req, res) => {
   try {
-    const { type, amount, category, description, date } = req.body;
+    const { type, amount, category_id, description, date } = req.body;
 
-    if (!type || !amount || !category || !date) {
+    if (!type || !amount || !category_id || !date) {
       return res.status(400).json({ error: 'Field wajib harus diisi' });
     }
 
@@ -88,8 +88,8 @@ router.post('/', async (req, res) => {
     }
 
     const [result] = await pool.query(
-      'INSERT INTO transactions (user_id, type, amount, category, description, date) VALUES (?, ?, ?, ?, ?, ?)',
-      [req.userId, type, amount, category, description || '', date]
+      'INSERT INTO transactions (user_id, type, amount, category_id, description, transaction_date) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.userId, type, amount, category_id, description || '', date]
     );
 
     res.status(201).json({
@@ -97,9 +97,9 @@ router.post('/', async (req, res) => {
       user_id: req.userId,
       type,
       amount,
-      category,
+      category_id,
       description,
-      date
+      transaction_date: date
     });
   } catch (error) {
     console.error(error);
@@ -111,7 +111,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { type, amount, category, description, date } = req.body;
+    const { type, amount, category_id, description, date } = req.body;
 
     // Cek ownership
     const [transactions] = await pool.query(
@@ -124,8 +124,8 @@ router.put('/:id', async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE transactions SET type = ?, amount = ?, category = ?, description = ?, date = ? WHERE id = ? AND user_id = ?',
-      [type, amount, category, description, date, id, req.userId]
+      'UPDATE transactions SET type = ?, amount = ?, category_id = ?, description = ?, transaction_date = ? WHERE id = ? AND user_id = ?',
+      [type, amount, category_id, description, date, id, req.userId]
     );
 
     res.json({
@@ -133,9 +133,9 @@ router.put('/:id', async (req, res) => {
       user_id: req.userId,
       type,
       amount,
-      category,
+      category_id,
       description,
-      date
+      transaction_date: date
     });
   } catch (error) {
     console.error(error);
