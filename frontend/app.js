@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCategories();
     loadTransactions();
     loadSummary();
+    
+    // Update quick stats after initial load
+    setTimeout(() => {
+      updateQuickStats();
+    }, 1000);
   } else {
     showAuth();
   }
@@ -251,9 +256,11 @@ let allTransactionsData = [];
 
 function displayTransactions(transactions) {
   console.log('displayTransactions called with:', transactions);
+  console.log('Number of transactions:', transactions.length);
   
   // Store all transactions data for filtering
   allTransactionsData = transactions;
+  console.log('allTransactionsData updated:', allTransactionsData.length, 'transactions');
   
   // Destroy existing DataTable if it exists
   if (transactionsTable) {
@@ -335,12 +342,18 @@ function displayTransactions(transactions) {
   // Setup custom filters after DataTable is initialized
   setupCustomFilters();
   
-  // Update quick stats
-  updateQuickStats();
+  // Update quick stats after data is loaded
+  setTimeout(() => {
+    updateQuickStats();
+  }, 500);
 }
 
 function updateQuickStats() {
+  console.log('updateQuickStats called');
+  console.log('allTransactionsData:', allTransactionsData);
+  
   if (!allTransactionsData || allTransactionsData.length === 0) {
+    console.log('No transaction data available');
     document.getElementById('quickStats').style.display = 'none';
     return;
   }
@@ -349,6 +362,8 @@ function updateQuickStats() {
   const filterType = document.getElementById('filterType').value;
   const filterMonth = document.getElementById('filterMonth').value;
   const filterYear = document.getElementById('filterYear').value;
+  
+  console.log('Filters:', { filterType, filterMonth, filterYear });
   
   let filteredData = allTransactionsData;
   
@@ -378,6 +393,8 @@ function updateQuickStats() {
     });
   }
 
+  console.log('Filtered data:', filteredData);
+
   // Calculate stats
   const totalIncome = filteredData
     .filter(t => t.type === 'income')
@@ -389,6 +406,8 @@ function updateQuickStats() {
     
   const balance = totalIncome - totalExpense;
   const totalCount = filteredData.length;
+
+  console.log('Calculated stats:', { totalIncome, totalExpense, balance, totalCount });
 
   // Update display
   document.getElementById('statsIncome').textContent = formatCurrency(totalIncome);
@@ -1174,3 +1193,17 @@ function setupEditCurrencyMask() {
     }
   });
 }
+// Force update stats - untuk debugging
+function forceUpdateStats() {
+  console.log('Force updating stats...');
+  console.log('Current allTransactionsData:', allTransactionsData);
+  
+  if (allTransactionsData && allTransactionsData.length > 0) {
+    updateQuickStats();
+  } else {
+    console.log('No data available for stats');
+  }
+}
+
+// Call this from browser console if needed: forceUpdateStats()
+window.forceUpdateStats = forceUpdateStats;
