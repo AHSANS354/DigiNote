@@ -96,34 +96,76 @@
             <h2>🕐 Riwayat Transaksi</h2>
           </div>
           
-          <!-- Filter Section -->
-          <div class="filter-section">
-            <div class="filter-row">
-              <select id="filterType">
-                <option value="">Semua Tipe</option>
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
-              </select>
-              <select id="filterMonth">
-                <option value="">Semua Bulan</option>
-                <option value="01">Januari</option>
-                <option value="02">Februari</option>
-                <option value="03">Maret</option>
-                <option value="04">April</option>
-                <option value="05">Mei</option>
-                <option value="06">Juni</option>
-                <option value="07">Juli</option>
-                <option value="08">Agustus</option>
-                <option value="09">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-              </select>
-              <select id="filterYear"></select>
+          <!-- Filter and Search Section -->
+          <div class="table-controls">
+            <div class="filter-section">
+              <div class="filter-row">
+                <select id="filterType">
+                  <option value="">Semua Tipe</option>
+                  <option value="income">Pemasukan</option>
+                  <option value="expense">Pengeluaran</option>
+                </select>
+                <select id="filterMonth">
+                  <option value="">Semua Bulan</option>
+                  <option value="01">Januari</option>
+                  <option value="02">Februari</option>
+                  <option value="03">Maret</option>
+                  <option value="04">April</option>
+                  <option value="05">Mei</option>
+                  <option value="06">Juni</option>
+                  <option value="07">Juli</option>
+                  <option value="08">Agustus</option>
+                  <option value="09">September</option>
+                  <option value="10">Oktober</option>
+                  <option value="11">November</option>
+                  <option value="12">Desember</option>
+                </select>
+                <select id="filterYear"></select>
+              </div>
+            </div>
+            
+            <div class="search-section">
+              <input type="text" id="searchTransactions" placeholder="🔍 Cari transaksi..." class="search-input">
             </div>
           </div>
           
-          <div id="transactionsList"></div>
+          <!-- Transactions Table -->
+          <div class="table-container">
+            <table id="transactionsTable" class="transactions-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-column="date">📅 Tanggal <span class="sort-icon">↕️</span></th>
+                  <th class="sortable" data-column="type">📊 Tipe <span class="sort-icon">↕️</span></th>
+                  <th class="sortable" data-column="category">🏷️ Kategori <span class="sort-icon">↕️</span></th>
+                  <th class="sortable" data-column="description">📝 Deskripsi <span class="sort-icon">↕️</span></th>
+                  <th class="sortable" data-column="amount">💰 Jumlah <span class="sort-icon">↕️</span></th>
+                  <th>⚙️ Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsTableBody">
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          <div class="pagination-container">
+            <div class="pagination-info">
+              <span id="paginationInfo">Menampilkan 0 dari 0 transaksi</span>
+            </div>
+            <div class="pagination-controls">
+              <select id="rowsPerPage" class="rows-per-page">
+                <option value="10">10 per halaman</option>
+                <option value="25">25 per halaman</option>
+                <option value="50">50 per halaman</option>
+                <option value="100">100 per halaman</option>
+              </select>
+              <div class="pagination-buttons">
+                <button id="prevPage" class="btn-pagination">‹ Sebelumnya</button>
+                <span id="pageNumbers" class="page-numbers"></span>
+                <button id="nextPage" class="btn-pagination">Selanjutnya ›</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

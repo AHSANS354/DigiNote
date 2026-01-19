@@ -59,6 +59,9 @@ function setupEventListeners() {
 
   // Setup currency input masking
   setupCurrencyMask();
+  
+  // Setup table controls
+  setupTableControls();
 
   // Set default date
   document.getElementById('date').valueAsDate = new Date();
@@ -268,36 +271,269 @@ async function deleteTransaction(id) {
 }
 
 // Display functions
-function displayTransactions(transactions) {
-  const container = document.getElementById('transactionsList');
-  
-  if (!container) return;
+let allTransactions = [];
+let filteredTransactions = [];
+let currentPage = 1;
+let rowsPerPage = 10;
+let sortColumn = 'date';
+let sortDirection = 'desc';
 
-  if (transactions.length === 0) {
-    container.innerHTML = '<div class="empty-state">Belum ada transaksi</div>';
+function displayTransactions(transactions) {
+  allTransactions = transactions;
+  applyFiltersAndSearch();
+}
+
+function applyFiltersAndSearch() {
+  const searchTerm = document.getElementById('searchTransactions')?.value.toLowerCase() || '';
+  
+  // Filter transactions based on search
+  filteredTransactions = allTransactions.filter(t => {
+    const searchableText = [
+      t.category_name || '',
+      t.description || '',
+      formatCurrency(t.amount),
+      formatDate(t.transaction_date),
+      t.type === 'income' ? 'pemasukan' : 'pengeluaran'
+    ].join(' ').toLowerCase();
+    
+    return searchableText.includes(searchTerm);
+  });
+  
+  // Sort transactions
+  sortTransactions();
+  
+  // Reset to first page when filtering
+  currentPage = 1;
+  
+  // Display paginated results
+  displayPaginatedTransactions();
+  updatePaginationControls();
+}
+
+function sortTransactions() {
+  filteredTransactions.sort((a, b) => {
+    let aVal, bVal;
+    
+    switch (sortColumn) {
+      case 'date':
+        aVal = new Date(a.transaction_date);
+        bVal = new Date(b.transaction_date);
+        break;
+      case 'type':
+        aVal = a.type;
+        bVal = b.type;
+        break;
+      case 'category':
+        aVal = a.category_name || '';
+        bVal = b.category_name || '';
+        break;
+      case 'description':
+        aVal = a.description || '';
+        bVal = b.description || '';
+        break;
+      case 'amount':
+        aVal = parseFloat(a.amount);
+        bVal = parseFloat(b.amount);
+        break;
+      default:
+        return 0;
+    }
+    
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function displayPaginatedTransactions() {
+  const tbody = document.getElementById('transactionsTableBody');
+  
+  if (!tbody) return;
+
+  if (filteredTransactions.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-table">
+          <div class="empty-table-icon">📝</div>
+          <div>Belum ada transaksi yang sesuai</div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  container.innerHTML = transactions.map(t => `
-    <div class="transaction-item">
-      <div class="transaction-info">
-        <div class="transaction-category">🏷️ ${t.category_name || 'Kategori'}</div>
-        ${t.description ? `<div class="transaction-description">${t.description}</div>` : ''}
-        <div class="transaction-date">📅 ${formatDate(t.transaction_date)}</div>
-      </div>
-      <div class="transaction-amount ${t.type}">
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+  tbody.innerHTML = pageTransactions.map(t => `
+    <tr>
+      <td>${formatDate(t.transaction_date)}</td>
+      <td>
+        <span class="type-badge ${t.type}">
+          ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
+        </span>
+      </td>
+      <td>🏷️ ${t.category_name || 'Kategori'}</td>
+      <td>${t.description || '-'}</td>
+      <td class="amount-cell ${t.type}">
         ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
-      </div>
-      <div class="transaction-actions">
-        <button class="btn-delete" data-id="${t.id}">🗑️</button>
-      </div>
-    </div>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn-action btn-delete" data-id="${t.id}" title="Hapus">
+            🗑️
+          </button>
+        </div>
+      </td>
+    </tr>
   `).join('');
   
   // Add event listeners for delete buttons
-  container.querySelectorAll('.btn-delete').forEach(btn => {
+  tbody.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', () => deleteTransaction(btn.dataset.id));
   });
+}
+
+function updatePaginationControls() {
+  const totalItems = filteredTransactions.length;
+  const totalPages = Math.ceil(totalItems / rowsPerPage);
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+  const endItem = Math.min(currentPage * rowsPerPage, totalItems);
+  
+  // Update info
+  const paginationInfo = document.getElementById('paginationInfo');
+  if (paginationInfo) {
+    paginationInfo.textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} transaksi`;
+  }
+  
+  // Update buttons
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+  
+  // Update page numbers
+  const pageNumbers = document.getElementById('pageNumbers');
+  if (pageNumbers) {
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    let pagesHTML = '';
+    
+    if (startPage > 1) {
+      pagesHTML += `<span class="page-number" data-page="1">1</span>`;
+      if (startPage > 2) {
+        pagesHTML += `<span class="page-ellipsis">...</span>`;
+      }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pagesHTML += `<span class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+    }
+    
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pagesHTML += `<span class="page-ellipsis">...</span>`;
+      }
+      pagesHTML += `<span class="page-number" data-page="${totalPages}">${totalPages}</span>`;
+    }
+    
+    pageNumbers.innerHTML = pagesHTML;
+    
+    // Add click listeners to page numbers
+    pageNumbers.querySelectorAll('.page-number').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.dataset.page);
+        displayPaginatedTransactions();
+        updatePaginationControls();
+      });
+    });
+  }
+}
+
+function setupTableControls() {
+  // Search functionality
+  const searchInput = document.getElementById('searchTransactions');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(applyFiltersAndSearch, 300));
+  }
+  
+  // Rows per page
+  const rowsSelect = document.getElementById('rowsPerPage');
+  if (rowsSelect) {
+    rowsSelect.addEventListener('change', (e) => {
+      rowsPerPage = parseInt(e.target.value);
+      currentPage = 1;
+      displayPaginatedTransactions();
+      updatePaginationControls();
+    });
+  }
+  
+  // Pagination buttons
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayPaginatedTransactions();
+        updatePaginationControls();
+      }
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayPaginatedTransactions();
+        updatePaginationControls();
+      }
+    });
+  }
+  
+  // Column sorting
+  const sortableHeaders = document.querySelectorAll('.sortable');
+  sortableHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const column = header.dataset.column;
+      
+      if (sortColumn === column) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = column;
+        sortDirection = 'asc';
+      }
+      
+      // Update header classes
+      sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+      header.classList.add(`sort-${sortDirection}`);
+      
+      applyFiltersAndSearch();
+    });
+  });
+}
+
+// Debounce function for search
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 function showApp() {
