@@ -62,11 +62,6 @@ function setupEventListeners() {
 
   // Set default date
   document.getElementById('date').valueAsDate = new Date();
-  
-  // Setup table controls after DOM is ready
-  setTimeout(() => {
-    setupTableControls();
-  }, 100);
 }
 
 // Auth functions
@@ -273,293 +268,82 @@ async function deleteTransaction(id) {
 }
 
 // Display functions
-let allTransactions = [];
-let filteredTransactions = [];
-let currentPage = 1;
-let rowsPerPage = 10;
-let sortColumn = 'date';
-let sortDirection = 'desc';
+let transactionsTable;
 
 function displayTransactions(transactions) {
   console.log('displayTransactions called with:', transactions);
-  console.log('Number of transactions:', transactions.length);
   
-  allTransactions = transactions;
-  applyFiltersAndSearch();
-}
-
-function applyFiltersAndSearch() {
-  console.log('applyFiltersAndSearch called');
-  console.log('allTransactions:', allTransactions.length);
+  // Destroy existing DataTable if it exists
+  if (transactionsTable) {
+    transactionsTable.destroy();
+  }
   
-  const searchInput = document.getElementById('searchTransactions');
-  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+  // Prepare data for DataTables
+  const tableData = transactions.map(t => [
+    formatDate(t.transaction_date),
+    `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
+      ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
+    </span>`,
+    `🏷️ ${t.category_name || 'Kategori'}`,
+    t.description || '-',
+    `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
+      ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
+    </span>`,
+    `<button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
+      🗑️
+    </button>`
+  ]);
   
-  console.log('Search term:', searchTerm);
-  
-  // Filter transactions based on search
-  filteredTransactions = allTransactions.filter(t => {
-    const searchableText = [
-      t.category_name || '',
-      t.description || '',
-      formatCurrency(t.amount),
-      formatDate(t.transaction_date),
-      t.type === 'income' ? 'pemasukan' : 'pengeluaran'
-    ].join(' ').toLowerCase();
-    
-    return searchableText.includes(searchTerm);
+  // Initialize DataTable
+  transactionsTable = $('#transactionsTable').DataTable({
+    data: tableData,
+    responsive: true,
+    pageLength: 10,
+    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+    order: [[0, 'desc']], // Sort by date descending
+    language: {
+      "decimal": "",
+      "emptyTable": "Belum ada transaksi",
+      "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ transaksi",
+      "infoEmpty": "Menampilkan 0 sampai 0 dari 0 transaksi",
+      "infoFiltered": "(difilter dari _MAX_ total transaksi)",
+      "infoPostFix": "",
+      "thousands": ".",
+      "lengthMenu": "Tampilkan _MENU_ transaksi",
+      "loadingRecords": "Loading...",
+      "processing": "Processing...",
+      "search": "🔍 Cari:",
+      "zeroRecords": "Tidak ada transaksi yang cocok",
+      "paginate": {
+        "first": "Pertama",
+        "last": "Terakhir",
+        "next": "Selanjutnya",
+        "previous": "Sebelumnya"
+      },
+      "aria": {
+        "sortAscending": ": aktifkan untuk mengurutkan kolom naik",
+        "sortDescending": ": aktifkan untuk mengurutkan kolom turun"
+      }
+    },
+    columnDefs: [
+      {
+        targets: [1, 4, 5], // Type, Amount, Action columns
+        orderable: false
+      },
+      {
+        targets: [5], // Action column
+        searchable: false
+      }
+    ],
+    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+         '<"row"<"col-sm-12"tr>>' +
+         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+    drawCallback: function() {
+      // Add some styling after each draw
+      $('.dataTables_filter input').addClass('form-control');
+      $('.dataTables_length select').addClass('form-select');
+    }
   });
-  
-  console.log('filteredTransactions:', filteredTransactions.length);
-  
-  // Sort transactions
-  sortTransactions();
-  
-  // Reset to first page when filtering
-  currentPage = 1;
-  
-  // Display paginated results
-  displayPaginatedTransactions();
-  updatePaginationControls();
-}
-
-function sortTransactions() {
-  filteredTransactions.sort((a, b) => {
-    let aVal, bVal;
-    
-    switch (sortColumn) {
-      case 'date':
-        aVal = new Date(a.transaction_date);
-        bVal = new Date(b.transaction_date);
-        break;
-      case 'type':
-        aVal = a.type;
-        bVal = b.type;
-        break;
-      case 'category':
-        aVal = a.category_name || '';
-        bVal = b.category_name || '';
-        break;
-      case 'description':
-        aVal = a.description || '';
-        bVal = b.description || '';
-        break;
-      case 'amount':
-        aVal = parseFloat(a.amount);
-        bVal = parseFloat(b.amount);
-        break;
-      default:
-        return 0;
-    }
-    
-    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
-}
-
-function displayPaginatedTransactions() {
-  const tbody = document.getElementById('transactionsTableBody');
-  
-  if (!tbody) return;
-
-  if (filteredTransactions.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6" class="empty-table">
-          <div class="empty-table-icon">📝</div>
-          <div>Belum ada transaksi yang sesuai</div>
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
-
-  tbody.innerHTML = pageTransactions.map(t => `
-    <tr>
-      <td>${formatDate(t.transaction_date)}</td>
-      <td>
-        <span class="type-badge ${t.type}">
-          ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
-        </span>
-      </td>
-      <td>🏷️ ${t.category_name || 'Kategori'}</td>
-      <td>${t.description || '-'}</td>
-      <td class="amount-cell ${t.type}">
-        ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
-      </td>
-      <td>
-        <div class="action-buttons">
-          <button class="btn-action btn-delete" data-id="${t.id}" title="Hapus">
-            🗑️
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-  
-  // Add event listeners for delete buttons
-  tbody.querySelectorAll('.btn-delete').forEach(btn => {
-    btn.addEventListener('click', () => deleteTransaction(btn.dataset.id));
-  });
-}
-
-function updatePaginationControls() {
-  const totalItems = filteredTransactions.length;
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
-  const endItem = Math.min(currentPage * rowsPerPage, totalItems);
-  
-  // Update info
-  const paginationInfo = document.getElementById('paginationInfo');
-  if (paginationInfo) {
-    paginationInfo.textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} transaksi`;
-  }
-  
-  // Update buttons
-  const prevBtn = document.getElementById('prevPage');
-  const nextBtn = document.getElementById('nextPage');
-  
-  if (prevBtn) prevBtn.disabled = currentPage <= 1;
-  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-  
-  // Update page numbers
-  const pageNumbers = document.getElementById('pageNumbers');
-  if (pageNumbers) {
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    let pagesHTML = '';
-    
-    if (startPage > 1) {
-      pagesHTML += `<span class="page-number" data-page="1">1</span>`;
-      if (startPage > 2) {
-        pagesHTML += `<span class="page-ellipsis">...</span>`;
-      }
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-      pagesHTML += `<span class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
-    }
-    
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pagesHTML += `<span class="page-ellipsis">...</span>`;
-      }
-      pagesHTML += `<span class="page-number" data-page="${totalPages}">${totalPages}</span>`;
-    }
-    
-    pageNumbers.innerHTML = pagesHTML;
-    
-    // Add click listeners to page numbers
-    pageNumbers.querySelectorAll('.page-number').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentPage = parseInt(btn.dataset.page);
-        displayPaginatedTransactions();
-        updatePaginationControls();
-      });
-    });
-  }
-}
-
-function setupTableControls() {
-  console.log('Setting up table controls...');
-  
-  // Search functionality
-  const searchInput = document.getElementById('searchTransactions');
-  if (searchInput) {
-    console.log('Search input found, adding listener');
-    searchInput.addEventListener('input', debounce(applyFiltersAndSearch, 300));
-  } else {
-    console.log('Search input not found');
-  }
-  
-  // Rows per page
-  const rowsSelect = document.getElementById('rowsPerPage');
-  if (rowsSelect) {
-    console.log('Rows select found, adding listener');
-    rowsSelect.addEventListener('change', (e) => {
-      rowsPerPage = parseInt(e.target.value);
-      currentPage = 1;
-      displayPaginatedTransactions();
-      updatePaginationControls();
-    });
-  } else {
-    console.log('Rows select not found');
-  }
-  
-  // Pagination buttons
-  const prevBtn = document.getElementById('prevPage');
-  const nextBtn = document.getElementById('nextPage');
-  
-  if (prevBtn) {
-    console.log('Prev button found, adding listener');
-    prevBtn.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        displayPaginatedTransactions();
-        updatePaginationControls();
-      }
-    });
-  }
-  
-  if (nextBtn) {
-    console.log('Next button found, adding listener');
-    nextBtn.addEventListener('click', () => {
-      const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
-      if (currentPage < totalPages) {
-        currentPage++;
-        displayPaginatedTransactions();
-        updatePaginationControls();
-      }
-    });
-  }
-  
-  // Column sorting
-  const sortableHeaders = document.querySelectorAll('.sortable');
-  console.log('Found sortable headers:', sortableHeaders.length);
-  
-  sortableHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-      const column = header.dataset.column;
-      console.log('Sorting by column:', column);
-      
-      if (sortColumn === column) {
-        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-      } else {
-        sortColumn = column;
-        sortDirection = 'asc';
-      }
-      
-      // Update header classes
-      sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      header.classList.add(`sort-${sortDirection}`);
-      
-      applyFiltersAndSearch();
-    });
-  });
-}
-
-// Debounce function for search
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 }
 
 function showApp() {
@@ -787,10 +571,6 @@ function setupTabSwitching() {
       // Load data for specific tabs
       if (tabId === 'tabRiwayat') {
         loadTransactions();
-        // Setup table controls when switching to history tab
-        setTimeout(() => {
-          setupTableControls();
-        }, 100);
       } else if (tabId === 'tabLaporan') {
         loadReport();
       }

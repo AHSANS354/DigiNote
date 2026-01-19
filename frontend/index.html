@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DigiNote - Catatan Keuangan Digital</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-  <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="styles.css?v=8">
+  
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+  
+  <!-- Bootstrap CSS for better styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
   <!-- Auth Section -->
@@ -96,16 +104,18 @@
             <h2>🕐 Riwayat Transaksi</h2>
           </div>
           
-          <!-- Filter and Search Section -->
-          <div class="table-controls">
-            <div class="filter-section">
-              <div class="filter-row">
-                <select id="filterType">
+          <!-- Filter Section -->
+          <div class="filter-section mb-3">
+            <div class="row g-2">
+              <div class="col-md-4">
+                <select id="filterType" class="form-select">
                   <option value="">Semua Tipe</option>
                   <option value="income">Pemasukan</option>
                   <option value="expense">Pengeluaran</option>
                 </select>
-                <select id="filterMonth">
+              </div>
+              <div class="col-md-4">
+                <select id="filterMonth" class="form-select">
                   <option value="">Semua Bulan</option>
                   <option value="01">Januari</option>
                   <option value="02">Februari</option>
@@ -120,51 +130,29 @@
                   <option value="11">November</option>
                   <option value="12">Desember</option>
                 </select>
-                <select id="filterYear"></select>
               </div>
-            </div>
-            
-            <div class="search-section">
-              <input type="text" id="searchTransactions" placeholder="🔍 Cari transaksi..." class="search-input">
+              <div class="col-md-4">
+                <select id="filterYear" class="form-select"></select>
+              </div>
             </div>
           </div>
           
-          <!-- Transactions Table -->
-          <div class="table-container">
-            <table id="transactionsTable" class="transactions-table">
-              <thead>
+          <!-- DataTable -->
+          <div class="table-responsive">
+            <table id="transactionsTable" class="table table-striped table-hover" style="width:100%">
+              <thead class="table-dark">
                 <tr>
-                  <th class="sortable" data-column="date">📅 Tanggal <span class="sort-icon">↕️</span></th>
-                  <th class="sortable" data-column="type">📊 Tipe <span class="sort-icon">↕️</span></th>
-                  <th class="sortable" data-column="category">🏷️ Kategori <span class="sort-icon">↕️</span></th>
-                  <th class="sortable" data-column="description">📝 Deskripsi <span class="sort-icon">↕️</span></th>
-                  <th class="sortable" data-column="amount">💰 Jumlah <span class="sort-icon">↕️</span></th>
+                  <th>📅 Tanggal</th>
+                  <th>📊 Tipe</th>
+                  <th>🏷️ Kategori</th>
+                  <th>📝 Deskripsi</th>
+                  <th>💰 Jumlah</th>
                   <th>⚙️ Aksi</th>
                 </tr>
               </thead>
-              <tbody id="transactionsTableBody">
+              <tbody>
               </tbody>
             </table>
-          </div>
-          
-          <!-- Pagination -->
-          <div class="pagination-container">
-            <div class="pagination-info">
-              <span id="paginationInfo">Menampilkan 0 dari 0 transaksi</span>
-            </div>
-            <div class="pagination-controls">
-              <select id="rowsPerPage" class="rows-per-page">
-                <option value="10">10 per halaman</option>
-                <option value="25">25 per halaman</option>
-                <option value="50">50 per halaman</option>
-                <option value="100">100 per halaman</option>
-              </select>
-              <div class="pagination-buttons">
-                <button id="prevPage" class="btn-pagination">‹ Sebelumnya</button>
-                <span id="pageNumbers" class="page-numbers"></span>
-                <button id="nextPage" class="btn-pagination">Selanjutnya ›</button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -319,8 +307,22 @@
     </div>
   </div>
 
+  <!-- jQuery (required for DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+  
   <script src="config.js"></script>
   <script src="notification.js"></script>
-  <script src="app.js?v=19"></script>
+  <script src="app.js?v=20"></script>
 </body>
 </html>

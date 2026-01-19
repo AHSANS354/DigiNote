@@ -1698,3 +1698,99 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
     display: none; /* Hide description on very small screens */
   }
 }
+/* ===== DATATABLES CUSTOM STYLES ===== */
+.dataTables_wrapper {
+  font-family: inherit;
+}
+
+.dataTables_filter {
+  margin-bottom: 1rem;
+}
+
+.dataTables_filter input {
+  border-radius: 8px;
+  border: 2px solid #e1e5e9;
+  padding: 8px 12px;
+  margin-left: 8px;
+}
+
+.dataTables_filter input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.dataTables_length select {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 4px 8px;
+  margin: 0 8px;
+}
+
+.dataTables_info {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.dataTables_paginate .paginate_button {
+  padding: 6px 12px !important;
+  margin: 0 2px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db !important;
+  background: white !important;
+  color: #374151 !important;
+}
+
+.dataTables_paginate .paginate_button:hover {
+  background: #f3f4f6 !important;
+  border-color: #9ca3af !important;
+}
+
+.dataTables_paginate .paginate_button.current {
+  background: #667eea !important;
+  color: white !important;
+  border-color: #667eea !important;
+}
+
+.dataTables_paginate .paginate_button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+/* Table styling */
+#transactionsTable {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#transactionsTable thead th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 15px 12px;
+}
+
+#transactionsTable tbody td {
+  padding: 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+#transactionsTable tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_length {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    text-align: center;
+    margin-top: 1rem;
+  }
+}
