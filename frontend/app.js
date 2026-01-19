@@ -258,23 +258,20 @@ function displayTransactions(transactions) {
   }
   
   // Prepare data for DataTables
-  const tableData = transactions.map(t => {
-    console.log('Transaction data:', t); // Debug log
-    return [
-      formatDate(t.transaction_date),
-      `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
-        ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
-      </span>`,
-      `🏷️ ${t.category_name || 'Kategori Tidak Diketahui'}`,
-      t.description || '-',
-      `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
-        ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
-      </span>`,
-      `<button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
-        🗑️
-      </button>`
-    ];
-  });
+  const tableData = transactions.map(t => [
+    formatDate(t.transaction_date),
+    `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
+      ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
+    </span>`,
+    `🏷️ ${t.category_name || 'Kategori Tidak Diketahui'}`,
+    t.description || '-',
+    `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
+      ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
+    </span>`,
+    `<button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
+      🗑️
+    </button>`
+  ]);
   
   // Initialize DataTable
   transactionsTable = $('#transactionsTable').DataTable({
