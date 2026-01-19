@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DigiNote - Catatan Keuangan Digital</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-  
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-  
+
   <!-- Bootstrap CSS for better styling -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
   <link rel="stylesheet" href="styles.css?v=9">
 </head>
+
 <body>
   <!-- Auth Section -->
   <div id="authSection" class="container">
     <div class="auth-box">
       <h1>💰 DigiNote</h1>
-      
+
       <!-- Login Form -->
       <div id="loginForm" class="form-container">
         <h2>🔑 Login</h2>
@@ -52,7 +55,7 @@
 
     <!-- Tab Content -->
     <div class="tab-content">
-      
+
       <!-- Tab 1: Transaksi -->
       <div id="tabTransaksi" class="tab-pane active">
         <!-- Summary Cards -->
@@ -103,18 +106,54 @@
           <div class="transactions-header">
             <h2>🕐 Riwayat Transaksi</h2>
           </div>
+
+          <!-- Quick Stats -->
+          <div class="row mb-3" id="quickStats" style="display: none;">
+            <div class="col-md-3">
+              <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                  <h6 class="card-title">📈 Total Pemasukan</h6>
+                  <h4 id="statsIncome">Rp 0</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                  <h6 class="card-title">📉 Total Pengeluaran</h6>
+                  <h4 id="statsExpense">Rp 0</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                  <h6 class="card-title">💰 Saldo</h6>
+                  <h4 id="statsBalance">Rp 0</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                  <h6 class="card-title">📊 Total Transaksi</h6>
+                  <h4 id="statsCount">0</h4>
+                </div>
+              </div>
+            </div>
+          </div>
           
           <!-- Filter Section -->
           <div class="filter-section mb-3">
             <div class="row g-2">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <select id="filterType" class="form-select">
                   <option value="">Semua Tipe</option>
                   <option value="income">Pemasukan</option>
                   <option value="expense">Pengeluaran</option>
                 </select>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <select id="filterMonth" class="form-select">
                   <option value="">Semua Bulan</option>
                   <option value="01">Januari</option>
@@ -131,29 +170,32 @@
                   <option value="12">Desember</option>
                 </select>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <select id="filterYear" class="form-select"></select>
+              </div>
+              <div class="col-md-3">
+                <button id="exportBtn" class="btn btn-success w-100">
+                  📊 Export Excel
+                </button>
               </div>
             </div>
           </div>
-          
+
           <!-- DataTable -->
-          <div class="table-responsive">
-            <table id="transactionsTable" class="table table-striped table-hover" style="width:100%">
-              <thead class="table-dark">
-                <tr>
-                  <th>📅 Tanggal</th>
-                  <th>📊 Tipe</th>
-                  <th>🏷️ Kategori</th>
-                  <th>📝 Deskripsi</th>
-                  <th>💰 Jumlah</th>
-                  <th>⚙️ Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
+          <table id="transactionsTable" class="table table-striped table-hover" style="width:100%">
+            <thead class="table-dark">
+              <tr>
+                <th>📅 Tanggal</th>
+                <th>📊 Tipe</th>
+                <th>🏷️ Kategori</th>
+                <th>📝 Deskripsi</th>
+                <th>💰 Jumlah</th>
+                <th>⚙️ Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -161,7 +203,7 @@
       <div id="tabLaporan" class="tab-pane">
         <div class="card">
           <h2>📊 Laporan Keuangan</h2>
-          
+
           <!-- Period Filter -->
           <div class="filter-section">
             <div class="filter-row">
@@ -183,7 +225,7 @@
               <select id="reportYear"></select>
             </div>
           </div>
-          
+
           <!-- Summary Detail -->
           <div class="report-summary">
             <div class="report-item">
@@ -243,12 +285,12 @@
         <h2>🏷️ Kelola Kategori</h2>
         <button class="modal-close" id="closeCategoryModal">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <!-- Add Category Form -->
         <form id="addCategoryForm">
           <h3>➕ Tambah Kategori Baru</h3>
-          
+
           <!-- Icon Picker -->
           <div class="icon-picker">
             <label>Pilih Icon:</label>
@@ -282,7 +324,7 @@
               <button type="button" class="icon-option" data-icon="✈️">✈️</button>
             </div>
           </div>
-          
+
           <div class="form-row">
             <input type="text" id="newCategoryName" placeholder="Nama Kategori" required>
             <select id="newCategoryType" required>
@@ -309,10 +351,10 @@
 
   <!-- jQuery (required for DataTables) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <!-- DataTables JS -->
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
@@ -320,9 +362,10 @@
   <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-  
+
   <script src="config.js"></script>
   <script src="notification.js"></script>
   <script src="app.js?v=20"></script>
 </body>
+
 </html>

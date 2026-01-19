@@ -31,10 +31,7 @@ function setupEventListeners() {
   document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
   document.getElementById('logoutBtn').addEventListener('click', handleLogout);
   
-  // Filters
-  document.getElementById('filterType').addEventListener('change', loadTransactions);
-  document.getElementById('filterMonth').addEventListener('change', loadTransactions);
-  document.getElementById('filterYear').addEventListener('change', loadTransactions);
+  // Report filters only (transaction filters handled by DataTables)
   document.getElementById('reportMonth').addEventListener('change', loadReport);
   document.getElementById('reportYear').addEventListener('change', loadReport);
 
@@ -59,6 +56,9 @@ function setupEventListeners() {
 
   // Setup currency input masking
   setupCurrencyMask();
+  
+  // Setup export button
+  setupExportButton();
 
   // Set default date
   document.getElementById('date').valueAsDate = new Date();
@@ -163,34 +163,9 @@ async function handleAddTransaction(e) {
 }
 
 async function loadTransactions() {
-  const filterType = document.getElementById('filterType');
-  const filterMonth = document.getElementById('filterMonth');
-  const filterYear = document.getElementById('filterYear');
-  
+  // Load all transactions without server-side filtering
+  // Client-side filtering will be handled by DataTables
   let url = `${API_URL}/transactions`;
-  const params = new URLSearchParams();
-  
-  if (filterType && filterType.value) {
-    params.append('type', filterType.value);
-  }
-  
-  // Build date range from month/year filter
-  if (filterMonth && filterYear && filterMonth.value && filterYear.value) {
-    const year = filterYear.value;
-    const month = filterMonth.value;
-    const startDate = `${year}-${month}-01`;
-    const lastDay = new Date(year, month, 0).getDate();
-    const endDate = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
-    params.append('startDate', startDate);
-    params.append('endDate', endDate);
-  } else if (filterYear && filterYear.value) {
-    params.append('startDate', `${filterYear.value}-01-01`);
-    params.append('endDate', `${filterYear.value}-12-31`);
-  }
-  
-  if (params.toString()) {
-    url += '?' + params.toString();
-  }
 
   try {
     const response = await fetch(url, {
@@ -269,9 +244,13 @@ async function deleteTransaction(id) {
 
 // Display functions
 let transactionsTable;
+let allTransactionsData = [];
 
 function displayTransactions(transactions) {
   console.log('displayTransactions called with:', transactions);
+  
+  // Store all transactions data for filtering
+  allTransactionsData = transactions;
   
   // Destroy existing DataTable if it exists
   if (transactionsTable) {
@@ -342,6 +321,125 @@ function displayTransactions(transactions) {
       // Add some styling after each draw
       $('.dataTables_filter input').addClass('form-control');
       $('.dataTables_length select').addClass('form-select');
+    }
+  });
+  
+  // Setup custom filters after DataTable is initialized
+  setupCustomFilters();
+  
+  // Update quick stats
+  updateQuickStats();
+}
+
+function updateQuickStats() {
+  if (!allTransactionsData || allTransactionsData.length === 0) {
+    document.getElementById('quickStats').style.display = 'none';
+    return;
+  }
+
+  // Get filtered data
+  const filterType = document.getElementById('filterType').value;
+  const filterMonth = document.getElementById('filterMonth').value;
+  const filterYear = document.getElementById('filterYear').value;
+  
+  let filteredData = allTransactionsData;
+  
+  if (filterType || filterMonth || filterYear) {
+    filteredData = allTransactionsData.filter(t => {
+      // Filter by type
+      if (filterType && t.type !== filterType) {
+        return false;
+      }
+      
+      // Filter by month/year
+      if (filterMonth || filterYear) {
+        const transactionDate = new Date(t.transaction_date);
+        const transactionMonth = String(transactionDate.getMonth() + 1).padStart(2, '0');
+        const transactionYear = transactionDate.getFullYear().toString();
+        
+        if (filterMonth && transactionMonth !== filterMonth) {
+          return false;
+        }
+        
+        if (filterYear && transactionYear !== filterYear) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }
+
+  // Calculate stats
+  const totalIncome = filteredData
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+  const totalExpense = filteredData
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+  const balance = totalIncome - totalExpense;
+  const totalCount = filteredData.length;
+
+  // Update display
+  document.getElementById('statsIncome').textContent = formatCurrency(totalIncome);
+  document.getElementById('statsExpense').textContent = formatCurrency(totalExpense);
+  document.getElementById('statsBalance').textContent = formatCurrency(balance);
+  document.getElementById('statsCount').textContent = totalCount;
+  
+  // Show stats
+  document.getElementById('quickStats').style.display = 'block';
+}
+
+function setupCustomFilters() {
+  // Remove existing custom filter if any
+  if ($.fn.dataTable.ext.search.length > 0) {
+    $.fn.dataTable.ext.search.pop();
+  }
+  
+  // Custom filter function for DataTables
+  $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+    if (settings.nTable.id !== 'transactionsTable') {
+      return true;
+    }
+    
+    const filterType = $('#filterType').val();
+    const filterMonth = $('#filterMonth').val();
+    const filterYear = $('#filterYear').val();
+    
+    // Get original transaction data
+    const transaction = allTransactionsData[dataIndex];
+    if (!transaction) return true;
+    
+    // Filter by type
+    if (filterType && transaction.type !== filterType) {
+      return false;
+    }
+    
+    // Filter by month/year
+    if (filterMonth || filterYear) {
+      const transactionDate = new Date(transaction.transaction_date);
+      const transactionMonth = String(transactionDate.getMonth() + 1).padStart(2, '0');
+      const transactionYear = transactionDate.getFullYear().toString();
+      
+      if (filterMonth && transactionMonth !== filterMonth) {
+        return false;
+      }
+      
+      if (filterYear && transactionYear !== filterYear) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+  
+  // Add event listeners to filter controls
+  $('#filterType, #filterMonth, #filterYear').off('change.customFilter').on('change.customFilter', function() {
+    if (transactionsTable) {
+      transactionsTable.draw();
+      updateQuickStats();
     }
   });
 }
@@ -810,4 +908,92 @@ function setupIconPicker() {
       selectedIcon = option.dataset.icon;
     });
   });
+}
+
+// Export functionality
+function setupExportButton() {
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportToExcel);
+  }
+}
+
+function exportToExcel() {
+  if (!allTransactionsData || allTransactionsData.length === 0) {
+    Toast.warning('Tidak ada data untuk diekspor');
+    return;
+  }
+
+  // Get filtered data from DataTable
+  let dataToExport = allTransactionsData;
+  
+  // Apply current filters
+  const filterType = document.getElementById('filterType').value;
+  const filterMonth = document.getElementById('filterMonth').value;
+  const filterYear = document.getElementById('filterYear').value;
+  
+  if (filterType || filterMonth || filterYear) {
+    dataToExport = allTransactionsData.filter(t => {
+      // Filter by type
+      if (filterType && t.type !== filterType) {
+        return false;
+      }
+      
+      // Filter by month/year
+      if (filterMonth || filterYear) {
+        const transactionDate = new Date(t.transaction_date);
+        const transactionMonth = String(transactionDate.getMonth() + 1).padStart(2, '0');
+        const transactionYear = transactionDate.getFullYear().toString();
+        
+        if (filterMonth && transactionMonth !== filterMonth) {
+          return false;
+        }
+        
+        if (filterYear && transactionYear !== filterYear) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }
+
+  if (dataToExport.length === 0) {
+    Toast.warning('Tidak ada data yang sesuai filter untuk diekspor');
+    return;
+  }
+
+  // Prepare CSV data
+  const headers = ['Tanggal', 'Tipe', 'Kategori', 'Deskripsi', 'Jumlah'];
+  const csvData = [headers];
+  
+  dataToExport.forEach(t => {
+    csvData.push([
+      formatDate(t.transaction_date),
+      t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+      t.category_name || 'Kategori',
+      t.description || '',
+      (t.type === 'income' ? '' : '-') + formatCurrency(t.amount).replace('Rp', '').trim()
+    ]);
+  });
+
+  // Convert to CSV string
+  const csvString = csvData.map(row => 
+    row.map(field => `"${field}"`).join(',')
+  ).join('\n');
+
+  // Create and download file
+  const blob = new Blob(['\ufeff' + csvString], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `transaksi_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  Toast.success(`${dataToExport.length} transaksi berhasil diekspor!`);
 }
