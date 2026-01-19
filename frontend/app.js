@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeYearFilters();
     loadCategories();
     loadTransactions();
-    // loadSummary will be called when switching to dashboard tab
+    // Load summary after DOM is ready
+    setTimeout(() => {
+      loadSummaryData();
+    }, 100);
   } else {
     showAuth();
   }
@@ -102,7 +105,10 @@ async function handleLogin(e) {
     showApp();
     loadCategories();
     loadTransactions();
-    // loadSummary will be called when switching to dashboard tab
+    // Load summary after DOM is ready
+    setTimeout(() => {
+      loadSummaryData();
+    }, 100);
   } catch (error) {
     console.error('Login error:', error);
     Toast.error('Error: ' + error.message);
@@ -190,12 +196,16 @@ async function loadTransactions() {
 }
 
 async function loadSummary() {
-  // Only run on dashboard tab
+  // Check if we're on dashboard tab
   const dashboardTab = document.querySelector('.nav-item[data-tab="tabTransaksi"]');
   if (!dashboardTab || !dashboardTab.classList.contains('active')) {
     return;
   }
   
+  await loadSummaryData();
+}
+
+async function loadSummaryData() {
   try {
     const totalIncome = document.getElementById('totalIncome');
     const totalExpense = document.getElementById('totalExpense');
