@@ -163,7 +163,10 @@ async function handleAddTransaction(e) {
     document.getElementById('amount').value = 'Rp 0';
     document.getElementById('date').valueAsDate = new Date();
     loadTransactions();
-    loadSummary();
+    // Only load summary if we're on dashboard tab
+    if (document.querySelector('.nav-item[data-tab="tabTransaksi"]').classList.contains('active')) {
+      loadSummary();
+    }
     Toast.success('Transaksi berhasil ditambahkan!');
   } catch (error) {
     Toast.error('Error: ' + error.message);
@@ -200,7 +203,11 @@ async function loadSummary() {
     const totalExpense = document.getElementById('totalExpense');
     const balance = document.getElementById('balance');
     
-    if (!totalIncome || !totalExpense || !balance) return;
+    // Only load summary if elements exist (dashboard tab)
+    if (!totalIncome || !totalExpense || !balance) {
+      console.log('Summary elements not found, skipping loadSummary');
+      return;
+    }
     
     // Get current month and year for default filter
     const currentYear = new Date().getFullYear();
@@ -243,7 +250,10 @@ async function deleteTransaction(id) {
     }
 
     loadTransactions();
-    loadSummary();
+    // Only load summary if we're on dashboard tab
+    if (document.querySelector('.nav-item[data-tab="tabTransaksi"]').classList.contains('active')) {
+      loadSummary();
+    }
     Toast.success('Transaksi berhasil dihapus!');
   } catch (error) {
     Toast.error('Error: ' + error.message);
@@ -358,15 +368,16 @@ function updateQuickStats() {
     return;
   }
 
-  // Get filtered data
-  const filterType = document.getElementById('filterType').value;
-  const filterMonth = document.getElementById('filterMonth').value;
-  const filterYear = document.getElementById('filterYear').value;
+  // Get filtered data - but don't apply default filters that might exclude all data
+  const filterType = document.getElementById('filterType')?.value || '';
+  const filterMonth = document.getElementById('filterMonth')?.value || '';
+  const filterYear = document.getElementById('filterYear')?.value || '';
   
   console.log('Filters:', { filterType, filterMonth, filterYear });
   
   let filteredData = allTransactionsData;
   
+  // Only apply filters if they are explicitly set (not default values)
   if (filterType || filterMonth || filterYear) {
     filteredData = allTransactionsData.filter(t => {
       // Filter by type
@@ -393,7 +404,7 @@ function updateQuickStats() {
     });
   }
 
-  console.log('Filtered data:', filteredData);
+  console.log('Filtered data:', filteredData.length, 'transactions');
 
   // Calculate stats
   const totalIncome = filteredData
@@ -410,13 +421,19 @@ function updateQuickStats() {
   console.log('Calculated stats:', { totalIncome, totalExpense, balance, totalCount });
 
   // Update display
-  document.getElementById('statsIncome').textContent = formatCurrency(totalIncome);
-  document.getElementById('statsExpense').textContent = formatCurrency(totalExpense);
-  document.getElementById('statsBalance').textContent = formatCurrency(balance);
-  document.getElementById('statsCount').textContent = totalCount;
+  const statsIncome = document.getElementById('statsIncome');
+  const statsExpense = document.getElementById('statsExpense');
+  const statsBalance = document.getElementById('statsBalance');
+  const statsCount = document.getElementById('statsCount');
+  
+  if (statsIncome) statsIncome.textContent = formatCurrency(totalIncome);
+  if (statsExpense) statsExpense.textContent = formatCurrency(totalExpense);
+  if (statsBalance) statsBalance.textContent = formatCurrency(balance);
+  if (statsCount) statsCount.textContent = totalCount;
   
   // Show stats
-  document.getElementById('quickStats').style.display = 'block';
+  const quickStats = document.getElementById('quickStats');
+  if (quickStats) quickStats.style.display = 'block';
 }
 
 function setupCustomFilters() {
@@ -698,6 +715,8 @@ function setupTabSwitching() {
         loadTransactions();
       } else if (tabId === 'tabLaporan') {
         loadReport();
+      } else if (tabId === 'tabTransaksi') {
+        loadSummary();
       }
     });
   });
@@ -1132,7 +1151,10 @@ async function handleEditTransaction(e) {
 
     closeEditModal();
     loadTransactions();
-    loadSummary();
+    // Only load summary if we're on dashboard tab
+    if (document.querySelector('.nav-item[data-tab="tabTransaksi"]').classList.contains('active')) {
+      loadSummary();
+    }
     Toast.success('Transaksi berhasil diupdate!');
   } catch (error) {
     console.error('Error updating transaction:', error);
