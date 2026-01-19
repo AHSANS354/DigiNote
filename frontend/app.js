@@ -59,12 +59,14 @@ function setupEventListeners() {
 
   // Setup currency input masking
   setupCurrencyMask();
-  
-  // Setup table controls
-  setupTableControls();
 
   // Set default date
   document.getElementById('date').valueAsDate = new Date();
+  
+  // Setup table controls after DOM is ready
+  setTimeout(() => {
+    setupTableControls();
+  }, 100);
 }
 
 // Auth functions
@@ -279,12 +281,21 @@ let sortColumn = 'date';
 let sortDirection = 'desc';
 
 function displayTransactions(transactions) {
+  console.log('displayTransactions called with:', transactions);
+  console.log('Number of transactions:', transactions.length);
+  
   allTransactions = transactions;
   applyFiltersAndSearch();
 }
 
 function applyFiltersAndSearch() {
-  const searchTerm = document.getElementById('searchTransactions')?.value.toLowerCase() || '';
+  console.log('applyFiltersAndSearch called');
+  console.log('allTransactions:', allTransactions.length);
+  
+  const searchInput = document.getElementById('searchTransactions');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+  
+  console.log('Search term:', searchTerm);
   
   // Filter transactions based on search
   filteredTransactions = allTransactions.filter(t => {
@@ -298,6 +309,8 @@ function applyFiltersAndSearch() {
     
     return searchableText.includes(searchTerm);
   });
+  
+  console.log('filteredTransactions:', filteredTransactions.length);
   
   // Sort transactions
   sortTransactions();
@@ -459,21 +472,29 @@ function updatePaginationControls() {
 }
 
 function setupTableControls() {
+  console.log('Setting up table controls...');
+  
   // Search functionality
   const searchInput = document.getElementById('searchTransactions');
   if (searchInput) {
+    console.log('Search input found, adding listener');
     searchInput.addEventListener('input', debounce(applyFiltersAndSearch, 300));
+  } else {
+    console.log('Search input not found');
   }
   
   // Rows per page
   const rowsSelect = document.getElementById('rowsPerPage');
   if (rowsSelect) {
+    console.log('Rows select found, adding listener');
     rowsSelect.addEventListener('change', (e) => {
       rowsPerPage = parseInt(e.target.value);
       currentPage = 1;
       displayPaginatedTransactions();
       updatePaginationControls();
     });
+  } else {
+    console.log('Rows select not found');
   }
   
   // Pagination buttons
@@ -481,6 +502,7 @@ function setupTableControls() {
   const nextBtn = document.getElementById('nextPage');
   
   if (prevBtn) {
+    console.log('Prev button found, adding listener');
     prevBtn.addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
@@ -491,6 +513,7 @@ function setupTableControls() {
   }
   
   if (nextBtn) {
+    console.log('Next button found, adding listener');
     nextBtn.addEventListener('click', () => {
       const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
       if (currentPage < totalPages) {
@@ -503,9 +526,12 @@ function setupTableControls() {
   
   // Column sorting
   const sortableHeaders = document.querySelectorAll('.sortable');
+  console.log('Found sortable headers:', sortableHeaders.length);
+  
   sortableHeaders.forEach(header => {
     header.addEventListener('click', () => {
       const column = header.dataset.column;
+      console.log('Sorting by column:', column);
       
       if (sortColumn === column) {
         sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -761,6 +787,10 @@ function setupTabSwitching() {
       // Load data for specific tabs
       if (tabId === 'tabRiwayat') {
         loadTransactions();
+        // Setup table controls when switching to history tab
+        setTimeout(() => {
+          setupTableControls();
+        }, 100);
       } else if (tabId === 'tabLaporan') {
         loadReport();
       }
