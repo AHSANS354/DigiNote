@@ -9,14 +9,9 @@
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 
   <!-- DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 
-  <!-- Bootstrap CSS for better styling -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 
 <body>
@@ -123,13 +118,13 @@
             </div>
             <div class="stat-card stat-balance">
               <div class="stat-content">
-                <h6 class="stat-title">� Saldo</h6>
+                <h6 class="stat-title">💳 Saldo</h6>
                 <h4 class="stat-value" id="statsBalance">Rp 0</h4>
               </div>
             </div>
             <div class="stat-card stat-count">
               <div class="stat-content">
-                <h6 class="stat-title">� Total Transaksi</h6>
+                <h6 class="stat-title">📝 Total Transaksi</h6>
                 <h4 class="stat-value" id="statsCount">0</h4>
               </div>
             </div>
@@ -166,22 +161,23 @@
           </div>
 
           <!-- DataTable -->
-          <div class="table-container">
-            <table id="transactionsTable" class="transactions-table" style="width:100%">
-              <thead>
-                <tr>
-                  <th>📅 Tanggal</th>
-                  <th>📊 Tipe</th>
-                  <th>🏷️ Kategori</th>
-                  <th>📝 Deskripsi</th>
-                  <th>💰 Jumlah</th>
-                  <th>⚙️ Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
+          <div class="table-info">
+            <small class="text-muted">💡 Geser tabel ke kanan untuk melihat kolom lainnya</small>
           </div>
+          <table id="transactionsTable" class="transactions-table" style="width:100%">
+            <thead>
+              <tr>
+                <th>📅 Tanggal</th>
+                <th>📊 Tipe</th>
+                <th>🏷️ Kategori</th>
+                <th>📝 Deskripsi</th>
+                <th>💰 Jumlah</th>
+                <th>⚙️ Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -340,11 +336,10 @@
   
   <!-- DataTables JS -->
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
   
   <script src="config.js"></script>
   <script src="notification.js"></script>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
 </body>
 
 </html>

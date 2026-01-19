@@ -276,7 +276,7 @@ function displayTransactions(transactions) {
   // Initialize DataTable
   transactionsTable = $('#transactionsTable').DataTable({
     data: tableData,
-    responsive: true,
+    scrollX: true,
     pageLength: 10,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
     order: [[0, 'desc']], // Sort by date descending
