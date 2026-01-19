@@ -319,8 +319,8 @@ function displayTransactions(transactions) {
          '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
     drawCallback: function() {
       // Add some styling after each draw
-      $('.dataTables_filter input').addClass('form-control');
-      $('.dataTables_length select').addClass('form-select');
+      $('.dataTables_filter input').addClass('search-input');
+      $('.dataTables_length select').addClass('filter-select');
     }
   });
   
