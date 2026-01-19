@@ -1136,7 +1136,7 @@ button i, h1 i, h2 i, h3 i {
 }
 
 
-/* Filter Section */
+/* Filter Section Styling */
 .filter-section {
   display: flex;
   flex-direction: column;
@@ -1152,12 +1152,28 @@ button i, h1 i, h2 i, h3 i {
   gap: 10px;
 }
 
-.filter-section select {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  background: white;
+.filter-section select, .filter-select {
+  padding: 10px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  background: white !important;
+}
+
+.btn-export {
+  padding: 10px 16px !important;
+  background: #10b981 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  transition: background 0.3s !important;
+  white-space: nowrap !important;
+}
+
+.btn-export:hover {
+  background: #059669 !important;
 }
 
 @media (min-width: 480px) {
@@ -1168,11 +1184,8 @@ button i, h1 i, h2 i, h3 i {
   
   .filter-row {
     flex: 1;
-  }
-  
-  .filter-section > select {
-    width: auto;
-    min-width: 150px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
   }
 }
 
@@ -1700,6 +1713,96 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
   .quick-stats {
     gap: 15px;
     margin-bottom: 20px;
+  }
+}
+
+/* Quick Stats Cards */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .quick-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+  }
+}
+
+.stat-card {
+  background: white !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border-left: 4px solid #2563eb !important;
+}
+
+.stat-card.stat-income {
+  border-left-color: #10b981 !important;
+}
+
+.stat-card.stat-expense {
+  border-left-color: #ef4444 !important;
+}
+
+.stat-card.stat-balance {
+  border-left-color: #2563eb !important;
+}
+
+.stat-card.stat-count {
+  border-left-color: #8b5cf6 !important;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-title {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .stat-card {
+    padding: 16px !important;
+  }
+  
+  .stat-title {
+    font-size: 12px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
+}
+
+/* Ensure card styling is applied with high specificity */
+#tabRiwayat .card {
+  background: white !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+  margin-bottom: 12px !important;
+}
+
+@media (min-width: 768px) {
+  #tabRiwayat .card {
+    padding: 20px !important;
+    margin-bottom: 20px !important;
   }
 }
 /* Search Input Styling */
