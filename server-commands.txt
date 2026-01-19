@@ -1,0 +1,22 @@
+# Copy paste perintah ini satu per satu di terminal server:
+
+# 1. Masuk ke direktori
+cd /var/www/apps/DigiNote
+
+# 2. Pull perubahan terbaru
+git pull origin main
+
+# 3. Cek apakah perbaikan sudah ada
+grep -n "category_name" frontend/app.js | head -5
+
+# 4. Restart aplikasi (pilih salah satu):
+# Jika pakai PM2:
+pm2 restart all
+
+# Atau jika pakai systemd:
+sudo systemctl restart nginx
+
+# 5. Cek status aplikasi
+pm2 status
+# atau
+sudo systemctl status nginx
