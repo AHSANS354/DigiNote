@@ -11,7 +11,7 @@
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 
 <body>
@@ -331,6 +331,44 @@
     </div>
   </div>
 
+  <!-- Edit Transaction Modal -->
+  <div id="editTransactionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>✏️ Edit Transaksi</h2>
+        <button class="modal-close" id="closeEditModal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="editTransactionForm">
+          <input type="hidden" id="editTransactionId">
+          
+          <div class="form-row">
+            <select id="editType" required>
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+            <input type="text" id="editAmount" placeholder="Rp 0" required inputmode="numeric">
+          </div>
+          
+          <div class="form-row-category">
+            <select id="editCategory" required>
+              <option value="">Pilih Kategori</option>
+            </select>
+          </div>
+          
+          <input type="date" id="editDate" required>
+          <textarea id="editDescription" placeholder="Deskripsi (opsional)" rows="2"></textarea>
+          
+          <div class="form-actions">
+            <button type="button" id="cancelEdit" class="btn-secondary">Batal</button>
+            <button type="submit" class="btn-primary">💾 Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- jQuery (required for DataTables) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   
@@ -339,7 +377,7 @@
   
   <script src="config.js"></script>
   <script src="notification.js"></script>
-  <script src="app.js?v=22"></script>
+  <script src="app.js?v=23"></script>
 </body>
 
 </html>

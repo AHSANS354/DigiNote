@@ -59,6 +59,9 @@ function setupEventListeners() {
   
   // Setup export button
   setupExportButton();
+  
+  // Initialize edit modal
+  initializeEditModal();
 
   // Set default date
   document.getElementById('date').valueAsDate = new Date();
@@ -268,9 +271,14 @@ function displayTransactions(transactions) {
     `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
       ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
     </span>`,
-    `<button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
-      🗑️
-    </button>`
+    `<div class="action-buttons">
+      <button class="btn btn-sm btn-outline-primary" onclick="editTransaction(${t.id})" title="Edit">
+        ✏️
+      </button>
+      <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
+        🗑️
+      </button>
+    </div>`
   ]);
   
   // Initialize DataTable
@@ -996,4 +1004,173 @@ function exportToExcel() {
   document.body.removeChild(link);
   
   Toast.success(`${dataToExport.length} transaksi berhasil diekspor!`);
+}
+// Edit transaction functionality
+let editTransactionModal;
+let currentEditId = null;
+
+function initializeEditModal() {
+  editTransactionModal = document.getElementById('editTransactionModal');
+  
+  // Setup event listeners
+  document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+  document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
+  document.getElementById('editTransactionForm').addEventListener('submit', handleEditTransaction);
+  document.getElementById('editType').addEventListener('change', updateEditCategoryOptions);
+  
+  // Close modal on outside click
+  editTransactionModal.addEventListener('click', (e) => {
+    if (e.target === editTransactionModal) {
+      closeEditModal();
+    }
+  });
+  
+  // Setup currency mask for edit amount
+  setupEditCurrencyMask();
+}
+
+async function editTransaction(id) {
+  try {
+    // Get transaction data
+    const response = await fetch(`${API_URL}/transactions/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      Toast.error('Gagal mengambil data transaksi');
+      return;
+    }
+
+    const transaction = await response.json();
+    
+    // Populate form
+    currentEditId = id;
+    document.getElementById('editTransactionId').value = id;
+    document.getElementById('editType').value = transaction.type;
+    document.getElementById('editAmount').value = formatCurrencyInput(transaction.amount);
+    document.getElementById('editDate').value = transaction.transaction_date.split('T')[0];
+    document.getElementById('editDescription').value = transaction.description || '';
+    
+    // Update categories and select current one
+    updateEditCategoryOptions();
+    setTimeout(() => {
+      document.getElementById('editCategory').value = transaction.category_id;
+    }, 100);
+    
+    // Show modal
+    editTransactionModal.classList.add('active');
+  } catch (error) {
+    console.error('Error loading transaction:', error);
+    Toast.error('Error: ' + error.message);
+  }
+}
+
+function closeEditModal() {
+  editTransactionModal.classList.remove('active');
+  document.getElementById('editTransactionForm').reset();
+  currentEditId = null;
+}
+
+async function handleEditTransaction(e) {
+  e.preventDefault();
+  
+  if (!currentEditId) {
+    Toast.error('ID transaksi tidak valid');
+    return;
+  }
+  
+  const amountInput = document.getElementById('editAmount').value;
+  const amount = parseCurrencyInput(amountInput);
+  
+  if (amount <= 0) {
+    Toast.warning('Jumlah harus lebih dari 0');
+    return;
+  }
+  
+  const transaction = {
+    type: document.getElementById('editType').value,
+    amount: amount,
+    category_id: document.getElementById('editCategory').value,
+    description: document.getElementById('editDescription').value,
+    date: document.getElementById('editDate').value
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/transactions/${currentEditId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(transaction)
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      Toast.error(data.error || 'Gagal mengupdate transaksi');
+      return;
+    }
+
+    closeEditModal();
+    loadTransactions();
+    loadSummary();
+    Toast.success('Transaksi berhasil diupdate!');
+  } catch (error) {
+    console.error('Error updating transaction:', error);
+    Toast.error('Error: ' + error.message);
+  }
+}
+
+function updateEditCategoryOptions() {
+  const typeSelect = document.getElementById('editType');
+  const categorySelect = document.getElementById('editCategory');
+  
+  if (!typeSelect || !categorySelect) return;
+  
+  const selectedType = typeSelect.value;
+
+  // Filter categories by type
+  const filteredCategories = categories.filter(c => c.type === selectedType);
+
+  // Update select options
+  categorySelect.innerHTML = '<option value="">Pilih Kategori</option>';
+  filteredCategories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat.id;
+    option.textContent = cat.name;
+    categorySelect.appendChild(option);
+  });
+}
+
+function setupEditCurrencyMask() {
+  const amountInput = document.getElementById('editAmount');
+  
+  if (!amountInput) return;
+  
+  amountInput.addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remove all non-digit characters
+    value = value.replace(/\D/g, '');
+    
+    // Convert to number and format
+    if (value) {
+      const number = parseInt(value);
+      e.target.value = formatCurrencyInput(number);
+    } else {
+      e.target.value = '';
+    }
+  });
+  
+  amountInput.addEventListener('focus', function(e) {
+    if (e.target.value === '' || e.target.value === 'Rp 0') {
+      e.target.value = '';
+    }
+  });
+  
+  amountInput.addEventListener('blur', function(e) {
+    if (e.target.value === '') {
+      e.target.value = 'Rp 0';
+    }
+  });
 }

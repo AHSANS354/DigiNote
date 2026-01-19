@@ -7,6 +7,27 @@ const router = express.Router();
 // Semua route butuh autentikasi
 router.use(authMiddleware);
 
+// Get single transaction by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [rows] = await pool.query(
+      'SELECT * FROM transactions WHERE id = ? AND user_id = ?',
+      [id, req.userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Get semua transaksi user
 router.get('/', async (req, res) => {
   try {
