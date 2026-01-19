@@ -38,6 +38,8 @@ router.get('/', async (req, res) => {
     query += ' ORDER BY t.transaction_date DESC, t.created_at DESC';
 
     const [rows] = await pool.query(query, params);
+    console.log('Transactions query result:', rows.length, 'rows');
+    console.log('Sample transaction:', rows[0]); // Debug log
     res.json(rows);
   } catch (error) {
     console.error(error);

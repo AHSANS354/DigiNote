@@ -1697,6 +1697,13 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
   .transactions-table td:nth-child(4) {
     display: none; /* Hide description on very small screens */
   }
+  
+  /* Ensure category column (3rd) is always visible */
+  .transactions-table th:nth-child(3),
+  .transactions-table td:nth-child(3) {
+    display: table-cell !important;
+    min-width: 120px !important;
+  }
 }
 /* ===== DATATABLES CUSTOM STYLES ===== */
 .dataTables_wrapper {
@@ -2162,5 +2169,41 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
 @media (min-width: 1024px) {
   .table-info {
     display: none;
+  }
+}
+/* ===== MOBILE CATEGORY FIX ===== */
+/* Ensure category column is always visible on all screen sizes */
+#transactionsTable th:nth-child(3),
+#transactionsTable td:nth-child(3) {
+  display: table-cell !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Mobile specific category styling */
+@media (max-width: 768px) {
+  #transactionsTable th:nth-child(3),
+  #transactionsTable td:nth-child(3) {
+    min-width: 100px !important;
+    font-size: 12px;
+    padding: 8px 6px !important;
+  }
+}
+
+/* Very small screens - make category more compact but still visible */
+@media (max-width: 480px) {
+  #transactionsTable th:nth-child(3),
+  #transactionsTable td:nth-child(3) {
+    min-width: 80px !important;
+    font-size: 11px;
+    padding: 6px 4px !important;
+  }
+  
+  /* Make category text shorter on very small screens */
+  #transactionsTable td:nth-child(3) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
   }
 }
