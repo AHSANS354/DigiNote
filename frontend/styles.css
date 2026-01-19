@@ -1719,11 +1719,16 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
 /* ===== SIMPLE DATATABLE STYLING ===== */
 .dataTables_wrapper {
   font-family: inherit;
+  background: transparent;
 }
 
 #transactionsTable {
   width: 100% !important;
   border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #transactionsTable th {
@@ -1736,6 +1741,7 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
 #transactionsTable td {
   padding: 10px 12px;
   border-bottom: 1px solid #f1f5f9;
+  background: white;
 }
 
 #transactionsTable tbody tr:hover {
@@ -1902,5 +1908,52 @@ h1 [data-feather], h2 [data-feather], h3 [data-feather] {
   .btn-secondary {
     width: 100%;
     margin-bottom: 10px;
+  }
+}
+/* ===== CARD STYLING FIX ===== */
+/* Ensure card styling is applied properly */
+#tabRiwayat .card,
+#tabLaporan .card,
+#tabTransaksi .card {
+  background: white !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 20px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Transactions header styling */
+.transactions-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.transactions-header h2 {
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Ensure proper spacing inside cards */
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile card adjustments */
+@media (max-width: 768px) {
+  #tabRiwayat .card,
+  #tabLaporan .card,
+  #tabTransaksi .card {
+    padding: 15px !important;
+    margin: 10px !important;
+    border-radius: 8px !important;
+  }
+  
+  .transactions-header h2 {
+    font-size: 20px;
   }
 }
