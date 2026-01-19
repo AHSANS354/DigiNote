@@ -540,13 +540,16 @@ async function loadReport() {
   try {
     // Build URL with date filters
     let summaryUrl = `${API_URL}/transactions/summary`;
-    let transactionsUrl = `${API_URL}/transactions?type=expense`;
+    let transactionsUrl = `${API_URL}/transactions`;
     const params = new URLSearchParams();
+    
+    // Add expense filter for transactions
+    params.append('type', 'expense');
     
     if (reportMonth && reportYear) {
       const startDate = `${reportYear}-${reportMonth}-01`;
       const lastDay = new Date(reportYear, reportMonth, 0).getDate();
-      const endDate = `${reportYear}-${reportMonth}-${lastDay}`;
+      const endDate = `${reportYear}-${reportMonth}-${String(lastDay).padStart(2, '0')}`;
       params.append('startDate', startDate);
       params.append('endDate', endDate);
     } else if (reportYear) {
@@ -554,9 +557,25 @@ async function loadReport() {
       params.append('endDate', `${reportYear}-12-31`);
     }
     
+    // Build final URLs
+    const summaryParams = new URLSearchParams();
+    if (reportMonth && reportYear) {
+      const startDate = `${reportYear}-${reportMonth}-01`;
+      const lastDay = new Date(reportYear, reportMonth, 0).getDate();
+      const endDate = `${reportYear}-${reportMonth}-${String(lastDay).padStart(2, '0')}`;
+      summaryParams.append('startDate', startDate);
+      summaryParams.append('endDate', endDate);
+    } else if (reportYear) {
+      summaryParams.append('startDate', `${reportYear}-01-01`);
+      summaryParams.append('endDate', `${reportYear}-12-31`);
+    }
+    
+    if (summaryParams.toString()) {
+      summaryUrl += '?' + summaryParams.toString();
+    }
+    
     if (params.toString()) {
-      summaryUrl += '?' + params.toString();
-      transactionsUrl += '&' + params.toString();
+      transactionsUrl += '?' + params.toString();
     }
     
     // Update summary in report tab
@@ -578,7 +597,11 @@ async function loadReport() {
 
     if (transactionsResponse.ok) {
       const transactions = await transactionsResponse.json();
+      console.log('Transactions for report:', transactions);
       displayCategoryBreakdown(transactions);
+    } else {
+      console.error('Failed to load transactions for report:', transactionsResponse.status);
+      displayCategoryBreakdown([]);
     }
   } catch (error) {
     console.error('Error loading report:', error);
@@ -587,6 +610,8 @@ async function loadReport() {
 
 function displayCategoryBreakdown(transactions) {
   const container = document.getElementById('categoryBreakdown');
+  
+  console.log('displayCategoryBreakdown called with:', transactions);
   
   if (transactions.length === 0) {
     container.innerHTML = '<div class="empty-state">Belum ada data pengeluaran</div>';
@@ -598,13 +623,17 @@ function displayCategoryBreakdown(transactions) {
   let maxAmount = 0;
 
   transactions.forEach(t => {
-    if (!categoryTotals[t.category]) {
-      categoryTotals[t.category] = 0;
+    const categoryName = t.category_name || 'Kategori Tidak Diketahui';
+    console.log('Processing transaction:', t, 'Category name:', categoryName);
+    if (!categoryTotals[categoryName]) {
+      categoryTotals[categoryName] = 0;
     }
     const amount = parseFloat(t.amount);
-    categoryTotals[t.category] += amount;
+    categoryTotals[categoryName] += amount;
     if (amount > maxAmount) maxAmount = amount;
   });
+
+  console.log('Category totals:', categoryTotals);
 
   // Convert to array and sort by amount
   const sortedCategories = Object.entries(categoryTotals)
@@ -615,11 +644,12 @@ function displayCategoryBreakdown(transactions) {
 
   container.innerHTML = sortedCategories.map(([category, amount]) => {
     const percentage = totalExpense > 0 ? (amount / totalExpense * 100).toFixed(1) : 0;
+    const categoryName = category || 'Kategori Tidak Diketahui';
     return `
       <div class="category-item-report">
         <div style="flex: 1;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <span class="category-name-report"><i class="fas fa-tag"></i> ${category}</span>
+            <span class="category-name-report"><i class="fas fa-tag"></i> ${categoryName}</span>
             <span class="category-amount-report">${formatCurrency(amount)}</span>
           </div>
           <div class="category-bar">
