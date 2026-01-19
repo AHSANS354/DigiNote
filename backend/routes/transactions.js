@@ -7,6 +7,40 @@ const router = express.Router();
 // Semua route butuh autentikasi
 router.use(authMiddleware);
 
+// Get summary (total income, expense, balance) - MUST be before /:id route
+router.get('/summary', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    let query = `
+      SELECT 
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as total_income,
+        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expense,
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) as balance
+      FROM transactions
+      WHERE user_id = ?
+    `;
+    
+    const params = [req.userId];
+    
+    if (startDate) {
+      query += ' AND transaction_date >= ?';
+      params.push(startDate);
+    }
+    
+    if (endDate) {
+      query += ' AND transaction_date <= ?';
+      params.push(endDate);
+    }
+
+    const [rows] = await pool.query(query, params);
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Get single transaction by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -60,40 +94,6 @@ router.get('/', async (req, res) => {
 
     const [rows] = await pool.query(query, params);
     res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Get summary (total income, expense, balance)
-router.get('/summary', async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
-    
-    let query = `
-      SELECT 
-        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as total_income,
-        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as total_expense,
-        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) as balance
-      FROM transactions
-      WHERE user_id = ?
-    `;
-    
-    const params = [req.userId];
-    
-    if (startDate) {
-      query += ' AND transaction_date >= ?';
-      params.push(startDate);
-    }
-    
-    if (endDate) {
-      query += ' AND transaction_date <= ?';
-      params.push(endDate);
-    }
-
-    const [rows] = await pool.query(query, params);
-    res.json(rows[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
