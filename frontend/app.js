@@ -847,12 +847,12 @@ function setupCurrencyMask() {
   amountInput.addEventListener('input', function(e) {
     let value = e.target.value;
     
-    // Remove all non-digit characters
+    // Remove all non-digit characters (including dots, Rp, spaces)
     value = value.replace(/\D/g, '');
     
     // Convert to number and format
-    if (value) {
-      const number = parseInt(value);
+    if (value && value !== '0') {
+      const number = parseInt(value, 10);
       e.target.value = formatCurrencyInput(number);
     } else {
       e.target.value = '';
@@ -866,14 +866,19 @@ function setupCurrencyMask() {
   });
   
   amountInput.addEventListener('blur', function(e) {
-    if (e.target.value === '') {
+    if (e.target.value === '' || e.target.value === 'Rp ') {
       e.target.value = 'Rp 0';
     }
   });
 }
 
 function formatCurrencyInput(number) {
-  return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // Ensure we have a valid number
+  const numValue = typeof number === 'string' ? parseFloat(number.replace(/\D/g, '')) : number;
+  if (isNaN(numValue) || numValue === 0) {
+    return 'Rp 0';
+  }
+  return 'Rp ' + Math.floor(numValue).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function parseCurrencyInput(value) {
@@ -1070,7 +1075,11 @@ async function editTransaction(id) {
     currentEditId = id;
     document.getElementById('editTransactionId').value = id;
     document.getElementById('editType').value = transaction.type;
-    document.getElementById('editAmount').value = formatCurrencyInput(transaction.amount);
+    
+    // Ensure amount is a number before formatting
+    const amountValue = parseFloat(transaction.amount);
+    document.getElementById('editAmount').value = formatCurrencyInput(amountValue);
+    
     document.getElementById('editDate').value = transaction.transaction_date.split('T')[0];
     document.getElementById('editDescription').value = transaction.description || '';
     
@@ -1092,6 +1101,8 @@ function closeEditModal() {
   editTransactionModal.classList.remove('active');
   document.getElementById('editTransactionForm').reset();
   currentEditId = null;
+  // Reset amount to default
+  document.getElementById('editAmount').value = 'Rp 0';
 }
 
 async function handleEditTransaction(e) {
@@ -1173,12 +1184,12 @@ function setupEditCurrencyMask() {
   amountInput.addEventListener('input', function(e) {
     let value = e.target.value;
     
-    // Remove all non-digit characters
+    // Remove all non-digit characters (including dots, Rp, spaces)
     value = value.replace(/\D/g, '');
     
     // Convert to number and format
-    if (value) {
-      const number = parseInt(value);
+    if (value && value !== '0') {
+      const number = parseInt(value, 10);
       e.target.value = formatCurrencyInput(number);
     } else {
       e.target.value = '';
@@ -1192,7 +1203,7 @@ function setupEditCurrencyMask() {
   });
   
   amountInput.addEventListener('blur', function(e) {
-    if (e.target.value === '') {
+    if (e.target.value === '' || e.target.value === 'Rp ') {
       e.target.value = 'Rp 0';
     }
   });
