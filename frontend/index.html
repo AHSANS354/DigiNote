@@ -132,28 +132,16 @@
           
           <!-- Filter Section -->
           <div class="filter-section mb-3">
-            <div class="filter-row">
-              <select id="filterType" class="filter-select">
+            <div class="filter-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <select id="filterType" class="filter-select" style="flex: 1; min-width: 150px;">
                 <option value="">Semua Tipe</option>
                 <option value="income">Pemasukan</option>
                 <option value="expense">Pengeluaran</option>
               </select>
-              <select id="filterMonth" class="filter-select">
-                <option value="">Semua Bulan</option>
-                <option value="01">Januari</option>
-                <option value="02">Februari</option>
-                <option value="03">Maret</option>
-                <option value="04">April</option>
-                <option value="05">Mei</option>
-                <option value="06">Juni</option>
-                <option value="07">Juli</option>
-                <option value="08">Agustus</option>
-                <option value="09">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-              </select>
-              <select id="filterYear" class="filter-select"></select>
+              <label for="filterStartDate">Dari:</label>
+              <input type="date" id="filterStartDate" style="flex: 1; min-width: 150px;">
+              <label for="filterEndDate">Sampai:</label>
+              <input type="date" id="filterEndDate" style="flex: 1; min-width: 150px;">
               <button id="exportBtn" class="btn-export">
                 📊 Export Excel
               </button>

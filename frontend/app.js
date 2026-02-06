@@ -389,31 +389,37 @@ function updateQuickStats() {
 
   // Get filtered data - but don't apply default filters that might exclude all data
   const filterType = document.getElementById('filterType')?.value || '';
-  const filterMonth = document.getElementById('filterMonth')?.value || '';
-  const filterYear = document.getElementById('filterYear')?.value || '';
+  const filterStartDate = document.getElementById('filterStartDate')?.value || '';
+  const filterEndDate = document.getElementById('filterEndDate')?.value || '';
   
   let filteredData = allTransactionsData;
   
   // Only apply filters if they are explicitly set (not default values)
-  if (filterType || filterMonth || filterYear) {
+  if (filterType || filterStartDate || filterEndDate) {
     filteredData = allTransactionsData.filter(t => {
       // Filter by type
       if (filterType && t.type !== filterType) {
         return false;
       }
       
-      // Filter by month/year
-      if (filterMonth || filterYear) {
+      // Filter by date range
+      if (filterStartDate || filterEndDate) {
         const transactionDate = new Date(t.transaction_date);
-        const transactionMonth = String(transactionDate.getMonth() + 1).padStart(2, '0');
-        const transactionYear = transactionDate.getFullYear().toString();
         
-        if (filterMonth && transactionMonth !== filterMonth) {
-          return false;
+        if (filterStartDate) {
+          const startDate = new Date(filterStartDate);
+          if (transactionDate < startDate) {
+            return false;
+          }
         }
         
-        if (filterYear && transactionYear !== filterYear) {
-          return false;
+        if (filterEndDate) {
+          const endDate = new Date(filterEndDate);
+          // Set end date to end of day for inclusive comparison
+          endDate.setHours(23, 59, 59, 999);
+          if (transactionDate > endDate) {
+            return false;
+          }
         }
       }
       
@@ -462,8 +468,8 @@ function setupCustomFilters() {
     }
     
     const filterType = $('#filterType').val();
-    const filterMonth = $('#filterMonth').val();
-    const filterYear = $('#filterYear').val();
+    const filterStartDate = $('#filterStartDate').val();
+    const filterEndDate = $('#filterEndDate').val();
     
     // Get original transaction data
     const transaction = allTransactionsData[dataIndex];
@@ -474,18 +480,24 @@ function setupCustomFilters() {
       return false;
     }
     
-    // Filter by month/year
-    if (filterMonth || filterYear) {
+    // Filter by date range
+    if (filterStartDate || filterEndDate) {
       const transactionDate = new Date(transaction.transaction_date);
-      const transactionMonth = String(transactionDate.getMonth() + 1).padStart(2, '0');
-      const transactionYear = transactionDate.getFullYear().toString();
       
-      if (filterMonth && transactionMonth !== filterMonth) {
-        return false;
+      if (filterStartDate) {
+        const startDate = new Date(filterStartDate);
+        if (transactionDate < startDate) {
+          return false;
+        }
       }
       
-      if (filterYear && transactionYear !== filterYear) {
-        return false;
+      if (filterEndDate) {
+        const endDate = new Date(filterEndDate);
+        // Set end date to end of day for inclusive comparison
+        endDate.setHours(23, 59, 59, 999);
+        if (transactionDate > endDate) {
+          return false;
+        }
       }
     }
     
@@ -493,7 +505,7 @@ function setupCustomFilters() {
   });
   
   // Add event listeners to filter controls
-  $('#filterType, #filterMonth, #filterYear').off('change.customFilter').on('change.customFilter', function() {
+  $('#filterType, #filterStartDate, #filterEndDate').off('change.customFilter').on('change.customFilter', function() {
     if (transactionsTable) {
       transactionsTable.draw();
       updateQuickStats();
@@ -907,24 +919,7 @@ function parseCurrencyInput(value) {
 
 // Initialize year filters
 function initializeYearFilters() {
-  const currentYear = new Date().getFullYear();
-  
-  const filterYear = document.getElementById('filterYear');
-  const filterMonth = document.getElementById('filterMonth');
-  
-  // Populate year dropdowns (last 5 years + current + next year)
-  const years = [];
-  for (let i = currentYear - 5; i <= currentYear + 1; i++) {
-    years.push(i);
-  }
-  
-  if (filterYear) {
-    filterYear.innerHTML = '<option value="">Semua Tahun</option>' + 
-      years.map(year => `<option value="${year}">${year}</option>`).join('');
-    // Don't set default value - let user choose
-  }
-  
-  // Don't set default month filter - let user choose
+  // No longer needed - filters now use date inputs
 }
 
 
