@@ -216,14 +216,8 @@ async function loadSummaryData() {
       return;
     }
     
-    // Get current month and year for default filter
-    const currentYear = new Date().getFullYear();
-    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-    const startDate = `${currentYear}-${currentMonth}-01`;
-    const lastDay = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
-    const endDate = `${currentYear}-${currentMonth}-${String(lastDay).padStart(2, '0')}`;
-    
-    const response = await fetch(`${API_URL}/transactions/summary?startDate=${startDate}&endDate=${endDate}`, {
+    // Load summary without date filter to show all transactions
+    const response = await fetch(`${API_URL}/transactions/summary`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -277,26 +271,36 @@ function displayTransactions(transactions) {
     transactionsTable.destroy();
   }
   
-  // Prepare data for DataTables
-  const tableData = transactions.map(t => [
-    formatDate(t.transaction_date),
-    `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
-      ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
-    </span>`,
-    `🏷️ ${t.category_name || 'Kategori Tidak Diketahui'}`,
-    t.description || '-',
-    `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
-      ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
-    </span>`,
-    `<div class="action-buttons">
-      <button class="btn btn-sm btn-outline-primary" onclick="editTransaction(${t.id})" title="Edit">
-        ✏️
-      </button>
-      <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
-        🗑️
-      </button>
-    </div>`
-  ]);
+  // Prepare data for DataTables with proper date sorting
+  const tableData = transactions.map(t => {
+    // Create a sortable date value (timestamp)
+    const dateObj = new Date(t.transaction_date);
+    const sortableDate = dateObj.getTime();
+    
+    return [
+      {
+        display: formatDate(t.transaction_date),
+        sort: sortableDate,
+        filter: formatDate(t.transaction_date)
+      },
+      `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
+        ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
+      </span>`,
+      `🏷️ ${t.category_name || 'Kategori Tidak Diketahui'}`,
+      t.description || '-',
+      `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
+        ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
+      </span>`,
+      `<div class="action-buttons">
+        <button class="btn btn-sm btn-outline-primary" onclick="editTransaction(${t.id})" title="Edit">
+          ✏️
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})" title="Hapus">
+          🗑️
+        </button>
+      </div>`
+    ];
+  });
   
   // Initialize DataTable
   transactionsTable = $('#transactionsTable').DataTable({
@@ -305,6 +309,25 @@ function displayTransactions(transactions) {
     pageLength: 10,
     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
     order: [[0, 'desc']], // Sort by date descending
+    columns: [
+      { 
+        data: null,
+        render: function(data, type, row) {
+          if (type === 'sort') {
+            return data[0].sort;
+          }
+          if (type === 'filter') {
+            return data[0].filter;
+          }
+          return data[0].display;
+        }
+      },
+      { data: 1 },
+      { data: 2 },
+      { data: 3 },
+      { data: 4 },
+      { data: 5 }
+    ],
     language: {
       "decimal": "",
       "emptyTable": "Belum ada transaksi",
