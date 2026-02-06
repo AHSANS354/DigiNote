@@ -277,6 +277,10 @@ function displayTransactions(transactions) {
     const dateObj = new Date(t.transaction_date);
     const sortableDate = dateObj.getTime();
     
+    // Get category icon and name
+    const categoryIcon = t.category_icon || '🏷️';
+    const categoryName = t.category_name || 'Kategori Tidak Diketahui';
+    
     return [
       {
         display: formatDate(t.transaction_date),
@@ -286,7 +290,7 @@ function displayTransactions(transactions) {
       `<span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">
         ${t.type === 'income' ? '📈 Masuk' : '📉 Keluar'}
       </span>`,
-      `🏷️ ${t.category_name || 'Kategori Tidak Diketahui'}`,
+      `${categoryIcon} ${categoryName}`,
       t.description || '-',
       `<span class="fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">
         ${t.type === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
@@ -614,7 +618,7 @@ function displayCategories() {
     incomeList.innerHTML = incomeCategories.map(cat => `
       <div class="category-item">
         <span class="category-name">
-          <i class="fas ${cat.icon || 'fa-tag'}"></i> ${cat.name}
+          ${cat.icon || '💰'} ${cat.name}
         </span>
         <button class="btn-delete-category" data-id="${cat.id}"><i class="fas fa-trash"></i> Hapus</button>
       </div>
@@ -633,7 +637,7 @@ function displayCategories() {
     expenseList.innerHTML = expenseCategories.map(cat => `
       <div class="category-item">
         <span class="category-name">
-          <i class="fas ${cat.icon || 'fa-tag'}"></i> ${cat.name}
+          ${cat.icon || '💰'} ${cat.name}
         </span>
         <button class="btn-delete-category" data-id="${cat.id}"><i class="fas fa-trash"></i> Hapus</button>
       </div>
