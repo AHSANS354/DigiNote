@@ -1160,6 +1160,22 @@ button i, h1 i, h2 i, h3 i {
   background: white !important;
 }
 
+.filter-section input[type="date"] {
+  padding: 10px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  background: white !important;
+}
+
+.filter-section label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+}
+
 .btn-export {
   padding: 10px 16px !important;
   background: #10b981 !important;

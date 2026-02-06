@@ -34,9 +34,9 @@ function setupEventListeners() {
   document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
   document.getElementById('logoutBtn').addEventListener('click', handleLogout);
   
-  // Report filters only (transaction filters handled by DataTables)
-  document.getElementById('reportMonth').addEventListener('change', loadReport);
-  document.getElementById('reportYear').addEventListener('change', loadReport);
+  // Report filters with date inputs
+  document.getElementById('reportStartDate').addEventListener('change', loadReport);
+  document.getElementById('reportEndDate').addEventListener('change', loadReport);
 
   // Category management
   document.getElementById('manageCategoriesBtn').addEventListener('click', openCategoryModal);
@@ -738,8 +738,8 @@ function setupTabSwitching() {
 
 // Load report data
 async function loadReport() {
-  const reportMonth = document.getElementById('reportMonth').value;
-  const reportYear = document.getElementById('reportYear').value;
+  const reportStartDate = document.getElementById('reportStartDate').value;
+  const reportEndDate = document.getElementById('reportEndDate').value;
   
   try {
     // Build URL with date filters
@@ -750,28 +750,23 @@ async function loadReport() {
     // Add expense filter for transactions
     params.append('type', 'expense');
     
-    if (reportMonth && reportYear) {
-      const startDate = `${reportYear}-${reportMonth}-01`;
-      const lastDay = new Date(reportYear, reportMonth, 0).getDate();
-      const endDate = `${reportYear}-${reportMonth}-${String(lastDay).padStart(2, '0')}`;
-      params.append('startDate', startDate);
-      params.append('endDate', endDate);
-    } else if (reportYear) {
-      params.append('startDate', `${reportYear}-01-01`);
-      params.append('endDate', `${reportYear}-12-31`);
+    // Add date filters if provided
+    if (reportStartDate) {
+      params.append('startDate', reportStartDate);
+    }
+    
+    if (reportEndDate) {
+      params.append('endDate', reportEndDate);
     }
     
     // Build final URLs
     const summaryParams = new URLSearchParams();
-    if (reportMonth && reportYear) {
-      const startDate = `${reportYear}-${reportMonth}-01`;
-      const lastDay = new Date(reportYear, reportMonth, 0).getDate();
-      const endDate = `${reportYear}-${reportMonth}-${String(lastDay).padStart(2, '0')}`;
-      summaryParams.append('startDate', startDate);
-      summaryParams.append('endDate', endDate);
-    } else if (reportYear) {
-      summaryParams.append('startDate', `${reportYear}-01-01`);
-      summaryParams.append('endDate', `${reportYear}-12-31`);
+    if (reportStartDate) {
+      summaryParams.append('startDate', reportStartDate);
+    }
+    
+    if (reportEndDate) {
+      summaryParams.append('endDate', reportEndDate);
     }
     
     if (summaryParams.toString()) {
@@ -913,12 +908,9 @@ function parseCurrencyInput(value) {
 // Initialize year filters
 function initializeYearFilters() {
   const currentYear = new Date().getFullYear();
-  const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
   
   const filterYear = document.getElementById('filterYear');
-  const reportYear = document.getElementById('reportYear');
   const filterMonth = document.getElementById('filterMonth');
-  const reportMonth = document.getElementById('reportMonth');
   
   // Populate year dropdowns (last 5 years + current + next year)
   const years = [];
@@ -932,20 +924,7 @@ function initializeYearFilters() {
     // Don't set default value - let user choose
   }
   
-  if (reportYear) {
-    reportYear.innerHTML = '<option value="">Semua Tahun</option>' + 
-      years.map(year => `<option value="${year}">${year}</option>`).join('');
-    reportYear.value = currentYear;
-  }
-  
   // Don't set default month filter - let user choose
-  // if (filterMonth) {
-  //   filterMonth.value = currentMonth;
-  // }
-  
-  if (reportMonth) {
-    reportMonth.value = currentMonth;
-  }
 }
 
 
